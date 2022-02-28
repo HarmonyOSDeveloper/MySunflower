@@ -22,6 +22,7 @@ class _ReportBugState extends State<ReportBug> {
         ),
       ),
       body: Container(
+        height: double.infinity,
         child: SingleChildScrollView(
           physics:
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),

@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,6 +13,18 @@ class History extends StatefulWidget {
 
 class _HistoryState extends State<History> {
   @override
+  void initState() {
+    var data = [];
+    this.initState();
+    Uri uri = Uri.parse('http://127.0.0.1:8888/api/apitoken');
+    http.get(uri).then((response) {
+      data = jsonDecode(response.body);
+      for (var d in data){
+        
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +54,7 @@ class _HistoryState extends State<History> {
                       ),
                     ),
                   ),
-                  SizedBox(width:7),
+                  SizedBox(width: 7),
                   ElevatedButton(
                     onPressed: () {
                       //Navigator.pushNamed(context, '/home');

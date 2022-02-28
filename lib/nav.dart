@@ -5,10 +5,11 @@ import 'package:mysunflower/addorremove.dart';
 import 'package:mysunflower/history.dart';
 import 'package:mysunflower/home.dart';
 import 'package:mysunflower/my.dart';
-
+var api2;
 class NavBase extends StatefulWidget {
-  const NavBase({Key? key}) : super(key: key);
+  final api;
 
+  const NavBase({Key? key, required this.api}) : super(key: key);
   @override
   _NavBaseState createState() => _NavBaseState();
 }
@@ -16,13 +17,16 @@ class NavBase extends StatefulWidget {
 class _NavBaseState extends State<NavBase> {
   @override
   int index = 0;
-  final List<Widget> _children = [
-    HomePage(),
-    MoneyMgr(),
-    History(),
-    MyScreen()
-  ];
   Widget build(BuildContext context) {
+    void initState(){
+      this.initState();
+      final List<Widget> _children = [
+          HomePage(api:widget.api),
+          MoneyMgr(),
+          History(),
+          MyScreen()
+        ];
+    }
     return new WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -33,6 +37,7 @@ class _NavBaseState extends State<NavBase> {
           onTap: (_index) {
             setState(() {
               index = _index;
+              print(widget.api);
             });
           },
           backgroundColor: const Color.fromARGB(255, 241, 243, 245),
