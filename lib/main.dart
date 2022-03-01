@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mysunflower/about.dart';
 import 'package:mysunflower/addorremove.dart';
 import 'package:mysunflower/nav.dart';
 import 'package:mysunflower/reportbug.dart';
@@ -13,7 +14,8 @@ void main() {
     home: LoginPage(),
     routes: {
       '/settings': (context) => Settings(),
-      '/bug': (context) => ReportBug()
+      '/bug': (context) => ReportBug(),
+      '/about': (context) => AboutPage()
     },
     theme: ThemeData(
       fontFamily: 'HarmonyOS_Sans',
@@ -182,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    NavBase(api:jsonDecode(response.body)["value"]),
+                                    NavBase(api:jsonDecode(response.body)["value"],user:username.text),
                               ),
                             );
                           }

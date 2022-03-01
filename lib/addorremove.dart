@@ -14,7 +14,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
     return Scaffold(
         appBar: AppBar(
             title: Text(
-              "Add/Remove Money",
+              "Transactions",
               style: TextStyle(fontSize: 30, color: Colors.black),
             ),
             automaticallyImplyLeading: false),

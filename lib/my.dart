@@ -134,6 +134,35 @@ class _MyScreenState extends State<MyScreen> {
                       ),
                     ),
                   ),
+                  Divider(),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/about');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text("About",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500)),
+                              Spacer(),
+                              //Text("9.9.9999(C6PR203)"),
+                              IconButton(
+                                  iconSize: 15.0,
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                  ))
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: 20,
                   ),
@@ -143,8 +172,7 @@ class _MyScreenState extends State<MyScreen> {
                     },
                     child: Text(
                       "Logout",
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 232, 64, 38)),
+                      style: TextStyle(color: Color.fromARGB(255, 232, 64, 38)),
                     ),
                     style: ButtonStyle(
                       minimumSize: MaterialStateProperty.all(Size(180, 39)),
