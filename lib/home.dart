@@ -6,10 +6,12 @@ import 'package:http/http.dart' as http;
 class HomePage extends StatefulWidget {
   final api;
   final user;
+  final page;
   const HomePage({
     Key? key,
     required this.api,
-    required this.user
+    required this.user,
+    required this.page
   }) : super(key: key);
 
   @override
@@ -52,6 +54,7 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         onPressed: () {
                           //Navigator.pushNamed(context, '/home');
+                          widget.page(1);
                         },
                         child: Text("Add"),
                         style: ElevatedButton.styleFrom(
@@ -61,7 +64,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(width: 10),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          widget.page(1);
+                        },
                         child: Text("Remove"),
                         style: ElevatedButton.styleFrom(
                             minimumSize: Size(
@@ -79,7 +84,9 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          widget.page(2);
+                        },
                         child: Text("View History"),
                         style: ElevatedButton.styleFrom(
                             minimumSize: Size(

@@ -21,9 +21,15 @@ class NavBase extends StatefulWidget {
 class _NavBaseState extends State<NavBase> {
   @override
   int index = 0;
+  void changePage(index2) {
+    setState(() {
+      index = index2;
+    });
+  }
+
   Widget build(BuildContext context) {
     final List<Widget> _children = [
-      HomePage(api: widget.api, user: widget.user),
+      HomePage(api: widget.api, user: widget.user,page:this.changePage),
       MoneyMgr(),
       History(
         api: widget.api,
