@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -102,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                                   'authorization': 'Bearer $logout',
                                   'user': '$user'
                                 }).then((response) {
-                                  //print(user);
+                              //print(user);
                               if (jsonDecode(response.body)["value"] ==
                                   "Completed") {
                                 Navigator.of(context).pop();
@@ -142,7 +143,133 @@ class _HomePageState extends State<HomePage> {
                           minimumSize:
                               Size(180, 39) // put the width and height you want
                           ),
-                    )
+                    ),
+                    SizedBox(height: 5),
+                    ElevatedButton(
+                      onPressed: () => showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              backgroundColor:
+                                  Colors.transparent, //this right here
+                              child: ClipRect(
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 15.0,
+                                    sigmaY: 15.0,
+                                  ),
+                                  child: Container(
+                                    height: 130,
+                                    decoration: new BoxDecoration(
+                                      color: Color.fromARGB(255, 255, 255, 255)
+                                          .withOpacity(0.9),
+                                      borderRadius: BorderRadius.circular(17),
+                                    ),
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Logout",
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 20,
+                                                fontFamily: "HarmonyOS_Sans"),
+                                          ),
+                                          Text(
+                                              "Are you sure you want to logout?"),
+                                          SizedBox(
+                                            height: 26,
+                                          ),
+                                          IntrinsicHeight(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Expanded(
+                                                  child: TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text(
+                                                        "Cancel",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    232,
+                                                                    64,
+                                                                    38)),
+                                                      ),
+                                                      style: ButtonStyle(
+                                                        shape: MaterialStateProperty.all<
+                                                                RoundedRectangleBorder>(
+                                                            RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            15)))),
+                                                      )),
+                                                ),
+                                                VerticalDivider(
+                                                  thickness: 1,
+                                                  width: 15,
+                                                  color: Color.fromRGBO(
+                                                      0, 0, 0, 0.2),
+                                                ),
+                                                Expanded(
+                                                  child: TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text(
+                                                        "Done",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    10,
+                                                                    89,
+                                                                    247)),
+                                                      ),
+                                                      style: ButtonStyle(
+                                                        shape: MaterialStateProperty.all<
+                                                                RoundedRectangleBorder>(
+                                                            RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            15)))),
+                                                      )),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                      child: Text("Dialog"),
+                      style: ElevatedButton.styleFrom(
+                          minimumSize:
+                              Size(180, 39) // put the width and height you want
+                          ),
+                    ),
                   ],
                 ),
               ),

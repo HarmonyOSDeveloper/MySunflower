@@ -54,7 +54,7 @@ void main() {
               splashFactory: NoSplash.splashFactory,
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular((11)),
+          borderRadius: BorderRadius.circular((10)),
         )))),
         appBarTheme: AppBarTheme(
             actionsIconTheme: IconThemeData(color: Colors.black),
