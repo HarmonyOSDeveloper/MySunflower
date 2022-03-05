@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 
 class AboutPage extends StatefulWidget {

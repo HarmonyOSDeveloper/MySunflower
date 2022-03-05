@@ -19,6 +19,7 @@ class _HistoryState extends State<History> {
   List<Map> _listb = [];
   void initState() {
     super.initState();
+    //print("Hello!");
     var data = [];
     Uri uri = Uri.parse('http://127.0.0.1:8888/api/ott');
     var api = widget.api;
@@ -33,10 +34,12 @@ class _HistoryState extends State<History> {
         'authorization': 'Bearer $authkey',
         'user': '$user'
       }).then((response2) {
+        //print("$authkey");
+        //print(response2.body);
         data = jsonDecode(response2.body);
         for (var d in data) {
           _listb.add(d);
-          print(d);
+          //print(d);
         }
         setState(() {});
       });

@@ -5,6 +5,8 @@ import 'package:mysunflower/addorremove.dart';
 import 'package:mysunflower/history.dart';
 import 'package:mysunflower/home.dart';
 import 'package:mysunflower/my.dart';
+import 'package:mysunflower/screen_management/screen_manager.dart';
+import 'package:provider/provider.dart';
 
 var api2;
 
@@ -19,17 +21,14 @@ class NavBase extends StatefulWidget {
 }
 
 class _NavBaseState extends State<NavBase> {
-  @override
-  int index = 0;
-  void changePage(index2) {
-    setState(() {
-      index = index2;
-    });
-  }
+  late final List<Widget> _children;
 
-  Widget build(BuildContext context) {
-    final List<Widget> _children = [
-      HomePage(api: widget.api, user: widget.user,page:this.changePage),
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _children = [
+      HomePage(api: widget.api, user: widget.user),
       MoneyMgr(),
       History(
         api: widget.api,
@@ -37,361 +36,243 @@ class _NavBaseState extends State<NavBase> {
       ),
       MyScreen()
     ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
     var shortestSide = MediaQuery.of(context).size.shortestSide;
     final isTablet = shortestSide > 550;
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    if (!isTablet) {
-      return new WillPopScope(
-        onWillPop: () async => false,
-        child: Scaffold(
-          bottomNavigationBar: Container(
-            height: 51,
-            width: double.infinity,
-            child: Column(children: [
-              //NavBar Item
-              Container(
-                height: 50,
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                  child: Row(
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 0;
-                            });
-                          },
-                          style: ButtonStyle(
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,50)),
-                              foregroundColor: (index == 0)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(Color.fromARGB(255, 144, 145, 147)
-                                      )
-                                      ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                            Icon(Icons.home),
-                            //SizedBox(width: 5),
-                            Text("Home")
-                          ])),
-                      Spacer(),
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 1;
-                            });
-                          },
-                          style: ButtonStyle(
-                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,50)),
-                              foregroundColor: (index == 1)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 144, 145, 147))),
-                          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
-                            Icon(Icons.attach_money_rounded),
-                            SizedBox(width: 5),
-                            Text("Transactions")
-                          ])
-                          ),
-                      Spacer(),
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 2;
-                            });
-                          },
-                          style: ButtonStyle(
-                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,50)),
-                              foregroundColor: (index == 2)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 144, 145, 147))),
-                          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
-                            Icon(Icons.history),
-                            SizedBox(width: 5),
-                            Text("History")
-                          ])),
-                      Spacer(),
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 3;
-                            });
-                          },
-                          style: ButtonStyle(
-                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,50)),
-                              foregroundColor: (index == 3)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 144, 145, 147))),
-                          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
-                            Icon(Icons.account_circle_rounded),
-                            SizedBox(width: 5),
-                            Text("My")
-                          ])),
-                    ],
-                  ),
-                ),
-              )
-            ]),
+
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Consumer<ScreenManager>(
+        builder: (context, screenManager, child) => (isTablet && !isPortrait)
+            ? Scaffold(
+                body:
+                    buildTabletHorizontal(isTablet, isPortrait, screenManager),
+                floatingActionButton: buildReportBug(context))
+            : Scaffold(
+                body: _children[screenManager.screenIndex],
+                floatingActionButton: buildReportBug(context),
+                bottomNavigationBar:
+                    buildBottomNav(isTablet, isPortrait, screenManager)),
+      ),
+    );
+  }
+
+  buildReportBug(BuildContext context) {
+    return Container(
+      height: 37,
+      width: 120,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.all(
+          Radius.circular(100),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 10,
+            blurRadius: 50,
+            offset: Offset(3, 5),
           ),
-          body: Container(child: _children[index]),
-          floatingActionButton: Container(
-            height: 37,
-            width: 120,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.all(
-                Radius.circular(100),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 10,
-                  blurRadius: 50,
-                  offset: Offset(3, 5),
-                ),
+        ],
+      ),
+      child: FloatingActionButton.extended(
+        elevation: 0,
+        focusElevation: 0,
+        highlightElevation: 0,
+        hoverElevation: 0,
+        backgroundColor: Colors.white,
+        onPressed: () {
+          Navigator.pushNamed(context, '/bug');
+        },
+        label: Text("Report A Bug",
+            style: TextStyle(
+                letterSpacing: .5, fontSize: 15, color: Colors.black)),
+      ),
+    );
+  }
+
+  buildTabletNavBtn(
+    int buttonId,
+    IconData iconData,
+    String label,
+    ScreenManager screenManager,
+  ) {
+    return TextButton(
+        onPressed: () {
+          screenManager.changeScreen(buttonId);
+        },
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(7)))),
+            minimumSize: MaterialStateProperty.all(Size(90, 45)),
+            foregroundColor: (buttonId == screenManager.screenIndex)
+                ? MaterialStateProperty.all(Color.fromARGB(255, 10, 89, 247))
+                : MaterialStateProperty.all(
+                    Color.fromARGB(255, 144, 145, 147))),
+        child:
+            Row(children: [Icon(iconData), SizedBox(width: 5), Text(label)]));
+  }
+
+  buildPhoneNavBtn(
+    int buttonId,
+    IconData iconData,
+    String label,
+    ScreenManager screenManager,
+  ) {
+    //Build Phone Bottom Nav Buttons
+    return TextButton(
+        onPressed: () {
+          screenManager.changeScreen(buttonId);
+        },
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(7)))),
+            minimumSize: MaterialStateProperty.all(Size(90, 50)),
+            foregroundColor: (buttonId == screenManager.screenIndex)
+                ? MaterialStateProperty.all(Color.fromARGB(255, 10, 89, 247))
+                : MaterialStateProperty.all(
+                    Color.fromARGB(255, 144, 145, 147))),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(iconData),
+          //SizedBox(width: 5),
+          Text(label)
+        ]));
+  }
+  buildTablet2NavBtn(
+    int buttonId,
+    IconData iconData,
+    String label,
+    ScreenManager screenManager,
+  ) {
+    //Build Phone Bottom Nav Buttons
+    return TextButton(
+        onPressed: () {
+          screenManager.changeScreen(buttonId);
+        },
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(7)))),
+            minimumSize: MaterialStateProperty.all(Size(100,100)),
+            foregroundColor: (buttonId == screenManager.screenIndex)
+                ? MaterialStateProperty.all(Color.fromARGB(255, 10, 89, 247))
+                : MaterialStateProperty.all(
+                    Color.fromARGB(255, 144, 145, 147))),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(iconData),
+          //SizedBox(width: 5),
+          Text(label)
+        ]));
+  }
+  bottomNavPhone(ScreenManager screenManager) {
+    return Container(
+      height: 51,
+      width: double.infinity,
+      child: Column(children: [
+        //NavBar Item
+        Container(
+          height: 50,
+          alignment: Alignment.center,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+            child: Row(
+              children: [
+                buildPhoneNavBtn(0, Icons.home, 'Home', screenManager),
+                Spacer(),
+                buildPhoneNavBtn(1, Icons.attach_money_rounded, 'Transactions',
+                    screenManager),
+                Spacer(),
+                buildPhoneNavBtn(2, Icons.history, 'History', screenManager),
+                Spacer(),
+                buildPhoneNavBtn(
+                    3, Icons.account_circle_rounded, 'My', screenManager),
               ],
             ),
-            child: FloatingActionButton.extended(
-              elevation: 0,
-              focusElevation: 0,
-              highlightElevation: 0,
-              hoverElevation: 0,
-              backgroundColor: Colors.white,
-              onPressed: () {
-                Navigator.pushNamed(context, '/bug');
-              },
-              label: Text("Report A Bug",
-                  style: TextStyle(
-                      letterSpacing: .5, fontSize: 15, color: Colors.black)),
-            ),
           ),
-        ),
-      );
-    } else if (isTablet && !isPortrait) {
-      return new WillPopScope(
-        onWillPop: () async => false,
-        child: Scaffold(
-          body: Row(
-            children: [
-              NavigationRail(
-                selectedIconTheme:
-                    IconThemeData(color: Color.fromARGB(255, 10, 89, 247)),
-                selectedLabelTextStyle:
-                    TextStyle(color: Color.fromARGB(255, 10, 89, 247)),
-                //indicatorColor: Color.fromARGB(255, 10, 89, 247),
-                backgroundColor: Color.fromARGB(255, 241, 243, 245),
-                selectedIndex: index,
-                onDestinationSelected: (int _index) {
-                  setState(() {
-                    index = _index;
-                    print(widget.api);
-                  });
-                },
-                labelType: NavigationRailLabelType.all,
-                destinations: const <NavigationRailDestination>[
-                  NavigationRailDestination(
-                    icon: Icon(Icons.home),
-                    label: Text("Home"),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.attach_money_rounded),
-                    label: Text('Transactions'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.history),
-                    label: Text('History'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.account_circle),
-                    label: Text('My'),
-                  ),
+        )
+      ]),
+    );
+  }
+
+  bottomNavTabletVerical(ScreenManager screenManager) {
+    return Container(
+        height: 40,
+        width: double.infinity,
+        child: Column(children: [
+          //NavBar Item
+          Container(
+            height: 39,
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+              child: Row(
+                children: [
+                  buildTabletNavBtn(0, Icons.home, 'Home', screenManager),
+                  Spacer(),
+                  buildTabletNavBtn(1, Icons.attach_money_rounded,
+                      'Transactions', screenManager),
+                  Spacer(),
+                  buildTabletNavBtn(2, Icons.history, 'History', screenManager),
+                  Spacer(),
+                  buildTabletNavBtn(
+                      3, Icons.account_circle_rounded, 'My', screenManager),
                 ],
               ),
-              //const VerticalDivider(thickness: 1, width: 1),
-              Expanded(child: _children[index]),
-            ],
-          ),
-          floatingActionButton: Container(
-            height: 37,
-            width: 120,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.all(
-                Radius.circular(100),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 10,
-                  blurRadius: 50,
-                  offset: Offset(3, 5),
-                ),
+            ),
+          )
+        ]));
+  }
+  bottomNavTabletHorizontal(ScreenManager screenManager) {
+    return Container(
+        height: double.infinity,
+        width: 97,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+          //NavBar Item
+          Container(
+            height: 500,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildTablet2NavBtn(0, Icons.home, 'Home', screenManager),
+                Spacer(),
+                buildTablet2NavBtn(1, Icons.attach_money_rounded,
+                    'Transactions', screenManager),
+                Spacer(),
+                buildTablet2NavBtn(2, Icons.history, 'History', screenManager),
+                Spacer(),
+                buildTablet2NavBtn(
+                    3, Icons.account_circle_rounded, 'My', screenManager),
               ],
             ),
-            child: FloatingActionButton.extended(
-              elevation: 0,
-              focusElevation: 0,
-              highlightElevation: 0,
-              hoverElevation: 0,
-              backgroundColor: Colors.white,
-              onPressed: () {
-                Navigator.pushNamed(context, '/bug');
-              },
-              label: Text("Report A Bug",
-                  style: TextStyle(
-                      letterSpacing: .5, fontSize: 15, color: Colors.black)),
-            ),
-          ),
-        ),
-      );
+          )
+        ]));
+  }
+  buildBottomNav(bool isTablet, bool isPortrait, ScreenManager screenManager) {
+    if (!isTablet) {
+      return bottomNavPhone(screenManager);
+    } else if (isTablet && isPortrait) {
+      return bottomNavTabletVerical(screenManager);
     } else {
-      return new WillPopScope(
-        onWillPop: () async => false,
-        child: Scaffold(
-          bottomNavigationBar: Container(
-            height: 40,
-            width: double.infinity,
-            child: Column(children: [
-              //NavBar Item
-              Container(
-                height: 39,
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                  child: Row(
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 0;
-                            });
-                          },
-                          style: ButtonStyle(
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,45)),
-                              foregroundColor: (index == 0)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 144, 145, 147))
-                                      ),
-                          child: Row(children: [
-                            Icon(Icons.home),
-                            SizedBox(width: 5),
-                            Text("Home")
-                          ])),
-                      Spacer(),
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 1;
-                            });
-                          },
-                          style: ButtonStyle(
-                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,45)),
-                              foregroundColor: (index == 1)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 144, 145, 147))),
-                          child: Row(children: [
-                            Icon(Icons.attach_money_rounded),
-                            SizedBox(width: 5),
-                            Text("Transactions")
-                          ])),
-                      Spacer(),
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 2;
-                            });
-                          },
-                          style: ButtonStyle(
-                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,45)),
-                              foregroundColor: (index == 2)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 144, 145, 147))),
-                          child: Row(children: [
-                            Icon(Icons.history),
-                            SizedBox(width: 5),
-                            Text("History")
-                          ])),
-                      Spacer(),
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              index = 3;
-                            });
-                          },
-                          style: ButtonStyle(
-                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
-                              minimumSize: MaterialStateProperty.all(Size(90,45)),
-                              foregroundColor: (index == 3)
-                                  ? MaterialStateProperty.all(
-                                      Color.fromARGB(255, 10, 89, 247))
-                                  : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 144, 145, 147))),
-                          child: Row(children: [
-                            Icon(Icons.account_circle_rounded),
-                            SizedBox(width: 5),
-                            Text("My")
-                          ])),
-                    ],
-                  ),
-                ),
-              )
-            ]),
-          ),
-          body: Container(child: _children[index]),
-          floatingActionButton: Container(
-            height: 37,
-            width: 120,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.all(
-                Radius.circular(100),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 10,
-                  blurRadius: 50,
-                  offset: Offset(3, 5),
-                ),
-              ],
-            ),
-            child: FloatingActionButton.extended(
-              elevation: 0,
-              focusElevation: 0,
-              highlightElevation: 0,
-              hoverElevation: 0,
-              backgroundColor: Colors.white,
-              onPressed: () {
-                Navigator.pushNamed(context, '/bug');
-              },
-              label: Text("Report A Bug",
-                  style: TextStyle(
-                      letterSpacing: .5, fontSize: 15, color: Colors.black)),
-            ),
-          ),
-        ),
-      );
+      return bottomNavTabletHorizontal(screenManager);
     }
+  }
+
+  buildTabletHorizontal(
+      bool isTablet, bool isPortrait, ScreenManager screenManager) {
+    return Row(
+      children: [
+        buildBottomNav(isTablet, isPortrait, screenManager),
+        Expanded(child: _children[screenManager.screenIndex]),
+      ],
+    );
   }
 }
