@@ -7,7 +7,6 @@ A new Flutter project.
 + “My” Screen
 + Redirect Buttons
 + Scroll Bounce(Some)
-+ Square Bouncing
 + Some Colours
 + Logo
 + Actual API Communication
