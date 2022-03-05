@@ -15,3 +15,7 @@ A new Flutter project.
 
 # Server Source
 https://github.com/MTOSCentral/SunflowerDev
+
+# UI DESIGN:
+https://github.com/HarmonyOSDeveloper/MySunflower/tree/main/!!!ScreenShots%20Of%20Ui%20Components
+https://developer.harmonyos.com/cn/docs/design/des-guides/featured-motion-0000001111433780
