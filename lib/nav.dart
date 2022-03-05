@@ -11,6 +11,7 @@ var api2;
 class NavBase extends StatefulWidget {
   final api;
   final user;
+
   const NavBase({Key? key, required this.api, required this.user})
       : super(key: key);
   @override
@@ -212,8 +213,11 @@ class _NavBaseState extends State<NavBase> {
                                       Color.fromARGB(255, 10, 89, 247))
                                   : MaterialStateProperty.all(
                                       Color.fromARGB(255, 0, 0, 0))),
-                          child:
-                              Row(children: [Icon(Icons.home), SizedBox(width:5),Text("Home")])),
+                          child: Row(children: [
+                            Icon(Icons.home),
+                            SizedBox(width: 5),
+                            Text("Home")
+                          ])),
                       Spacer(),
                       TextButton(
                           onPressed: () {
@@ -229,7 +233,7 @@ class _NavBaseState extends State<NavBase> {
                                       Color.fromARGB(255, 0, 0, 0))),
                           child: Row(children: [
                             Icon(Icons.attach_money_rounded),
-                            SizedBox(width:5),
+                            SizedBox(width: 5),
                             Text("Transactions")
                           ])),
                       Spacer(),
@@ -247,7 +251,7 @@ class _NavBaseState extends State<NavBase> {
                                       Color.fromARGB(255, 0, 0, 0))),
                           child: Row(children: [
                             Icon(Icons.history),
-                            SizedBox(width:5),
+                            SizedBox(width: 5),
                             Text("History")
                           ])),
                       Spacer(),
@@ -265,7 +269,7 @@ class _NavBaseState extends State<NavBase> {
                                       Color.fromARGB(255, 0, 0, 0))),
                           child: Row(children: [
                             Icon(Icons.account_circle_rounded),
-                            SizedBox(width:5),
+                            SizedBox(width: 5),
                             Text("My")
                           ])),
                     ],
