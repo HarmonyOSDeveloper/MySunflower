@@ -44,37 +44,106 @@ class _NavBaseState extends State<NavBase> {
       return new WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
-          bottomNavigationBar: BottomNavigationBar(
-            selectedItemColor: Color.fromARGB(255, 10, 89, 247),
-            selectedFontSize: 15.0,
-            unselectedFontSize: 15.0,
-            onTap: (_index) {
-              setState(() {
-                index = _index;
-                //print(widget.api);
-              });
-            },
-            backgroundColor: const Color.fromARGB(255, 241, 243, 245),
-            currentIndex: index, // this will be set when a new tab is tapped
-            type: BottomNavigationBarType.fixed,
-            items: [
-              BottomNavigationBarItem(
-                icon: new Icon(Icons.home),
-                label: "Home",
-              ),
-              BottomNavigationBarItem(
-                icon: new Icon(Icons.attach_money_rounded),
-                label: "Transactions",
-              ),
-              BottomNavigationBarItem(
-                icon: new Icon(Icons.history),
-                label: "History",
-              ),
-              BottomNavigationBarItem(
-                icon: new Icon(Icons.account_circle),
-                label: "My",
-              ),
-            ],
+          bottomNavigationBar: Container(
+            height: 51,
+            width: double.infinity,
+            child: Column(children: [
+              //NavBar Item
+              Container(
+                height: 50,
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                  child: Row(
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              index = 0;
+                            });
+                          },
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,50)),
+                              foregroundColor: (index == 0)
+                                  ? MaterialStateProperty.all(
+                                      Color.fromARGB(255, 10, 89, 247))
+                                  : MaterialStateProperty.all(Color.fromARGB(255, 144, 145, 147)
+                                      )
+                                      ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                            Icon(Icons.home),
+                            //SizedBox(width: 5),
+                            Text("Home")
+                          ])),
+                      Spacer(),
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              index = 1;
+                            });
+                          },
+                          style: ButtonStyle(
+                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,50)),
+                              foregroundColor: (index == 1)
+                                  ? MaterialStateProperty.all(
+                                      Color.fromARGB(255, 10, 89, 247))
+                                  : MaterialStateProperty.all(
+                                      Color.fromARGB(255, 144, 145, 147))),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
+                            Icon(Icons.attach_money_rounded),
+                            SizedBox(width: 5),
+                            Text("Transactions")
+                          ])
+                          ),
+                      Spacer(),
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              index = 2;
+                            });
+                          },
+                          style: ButtonStyle(
+                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,50)),
+                              foregroundColor: (index == 2)
+                                  ? MaterialStateProperty.all(
+                                      Color.fromARGB(255, 10, 89, 247))
+                                  : MaterialStateProperty.all(
+                                      Color.fromARGB(255, 144, 145, 147))),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
+                            Icon(Icons.history),
+                            SizedBox(width: 5),
+                            Text("History")
+                          ])),
+                      Spacer(),
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              index = 3;
+                            });
+                          },
+                          style: ButtonStyle(
+                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,50)),
+                              foregroundColor: (index == 3)
+                                  ? MaterialStateProperty.all(
+                                      Color.fromARGB(255, 10, 89, 247))
+                                  : MaterialStateProperty.all(
+                                      Color.fromARGB(255, 144, 145, 147))),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
+                            Icon(Icons.account_circle_rounded),
+                            SizedBox(width: 5),
+                            Text("My")
+                          ])),
+                    ],
+                  ),
+                ),
+              )
+            ]),
           ),
           body: Container(child: _children[index]),
           floatingActionButton: Container(
@@ -150,7 +219,7 @@ class _NavBaseState extends State<NavBase> {
                   ),
                 ],
               ),
-              const VerticalDivider(thickness: 1, width: 1),
+              //const VerticalDivider(thickness: 1, width: 1),
               Expanded(child: _children[index]),
             ],
           ),
@@ -192,16 +261,12 @@ class _NavBaseState extends State<NavBase> {
         onWillPop: () async => false,
         child: Scaffold(
           bottomNavigationBar: Container(
-            height: 50,
+            height: 40,
             width: double.infinity,
             child: Column(children: [
-              Divider(
-                thickness: 1,
-                height: 1,
-              ),
               //NavBar Item
               Container(
-                height: 49,
+                height: 39,
                 alignment: Alignment.center,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
@@ -214,11 +279,14 @@ class _NavBaseState extends State<NavBase> {
                             });
                           },
                           style: ButtonStyle(
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,45)),
                               foregroundColor: (index == 0)
                                   ? MaterialStateProperty.all(
                                       Color.fromARGB(255, 10, 89, 247))
                                   : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 0, 0, 0))),
+                                      Color.fromARGB(255, 144, 145, 147))
+                                      ),
                           child: Row(children: [
                             Icon(Icons.home),
                             SizedBox(width: 5),
@@ -232,11 +300,13 @@ class _NavBaseState extends State<NavBase> {
                             });
                           },
                           style: ButtonStyle(
+                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,45)),
                               foregroundColor: (index == 1)
                                   ? MaterialStateProperty.all(
                                       Color.fromARGB(255, 10, 89, 247))
                                   : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 0, 0, 0))),
+                                      Color.fromARGB(255, 144, 145, 147))),
                           child: Row(children: [
                             Icon(Icons.attach_money_rounded),
                             SizedBox(width: 5),
@@ -250,11 +320,13 @@ class _NavBaseState extends State<NavBase> {
                             });
                           },
                           style: ButtonStyle(
+                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,45)),
                               foregroundColor: (index == 2)
                                   ? MaterialStateProperty.all(
                                       Color.fromARGB(255, 10, 89, 247))
                                   : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 0, 0, 0))),
+                                      Color.fromARGB(255, 144, 145, 147))),
                           child: Row(children: [
                             Icon(Icons.history),
                             SizedBox(width: 5),
@@ -268,11 +340,13 @@ class _NavBaseState extends State<NavBase> {
                             });
                           },
                           style: ButtonStyle(
+                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(7)))),
+                              minimumSize: MaterialStateProperty.all(Size(90,45)),
                               foregroundColor: (index == 3)
                                   ? MaterialStateProperty.all(
                                       Color.fromARGB(255, 10, 89, 247))
                                   : MaterialStateProperty.all(
-                                      Color.fromARGB(255, 0, 0, 0))),
+                                      Color.fromARGB(255, 144, 145, 147))),
                           child: Row(children: [
                             Icon(Icons.account_circle_rounded),
                             SizedBox(width: 5),
