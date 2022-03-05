@@ -9,13 +9,15 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   var _sw01 = false;
+  bool? _value = false;
+  double _value2 = 0;
+  var val;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           leading: BackButton(color: Colors.black),
-          title: Text("Settings",
-              style: TextStyle(color: Colors.black))),
+          title: Text("Settings", style: TextStyle(color: Colors.black))),
       body: Container(
         height: double.infinity,
         child: SingleChildScrollView(
@@ -34,7 +36,7 @@ class _SettingsState extends State<Settings> {
                   ),
                   child: ListView(
                     shrinkWrap: true,
-                    padding: const EdgeInsets.all(9.0),
+                    padding: const EdgeInsets.all(6.0),
                     children: <Widget>[
                       TextButton(
                         onPressed: () {
@@ -99,7 +101,9 @@ class _SettingsState extends State<Settings> {
                             Row(
                               children: [
                                 Text("Application Version",
-                                    style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500)),
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500)),
                                 Spacer(),
                                 Text("9.9.9999(C6PR203)"),
                                 //IconButton(iconSize: 15.0,onPressed: (){}, icon: Icon(Icons.arrow_forward_ios_rounded,))
@@ -110,6 +114,71 @@ class _SettingsState extends State<Settings> {
                       ),
                     ],
                   ),
+                ),
+              ),
+              Checkbox(
+                value: _value,
+                onChanged: (value) {
+                  setState(() {
+                    _value = value;
+                  });
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4)),
+                fillColor:
+                    MaterialStateProperty.all(Color.fromARGB(255, 10, 89, 247)),
+                side: MaterialStateBorderSide.resolveWith(
+                  (states) => BorderSide(
+                      width: 1.5, color: Color.fromRGBO(0, 0, 0, 40)),
+                ),
+              ),
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: Colors.blue,
+                  inactiveTrackColor: Colors.grey,
+                  trackShape: RoundedRectSliderTrackShape(),
+                  trackHeight: 30.0,
+                  thumbColor: Colors.white,
+                  thumbShape: RoundSliderThumbShape(
+                    enabledThumbRadius: 12.0,
+                  ),
+                  overlayColor: Colors.white.withAlpha(32),
+                  overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+                ),
+                child: Slider(
+                  value: _value2,
+                  onChanged: (value) {
+                    setState(() {
+                      _value2 = value;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text("Male"),
+                leading: Radio(
+                  value: 1,
+                  groupValue: val,
+                  onChanged: (value) {
+                    setState(() {
+                      val = value;
+                    });
+                  },
+                  activeColor: Colors.green,
+                ),
+              ),
+              ListTile(
+                title: Text("Female"),
+                leading: Radio(
+                  value: 2,
+                  groupValue: val,
+                  onChanged: (value) {
+                    setState(() {
+                      val = value;
+                    });
+                  },
+                  activeColor: Colors.green,
+                  
                 ),
               ),
             ],
