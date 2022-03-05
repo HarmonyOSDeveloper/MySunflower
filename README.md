@@ -5,7 +5,7 @@ A new Flutter project.
 ## TODO LIST:
 + Animations
 + “My” Screen
-+ Redirect Buttons
++ Redirect Buttons **(FIXED:https://stackoverflow.com/questions/54585166/flutter-how-to-change-the-parent-bottomnavigationbar-index-from-a-child-widget)**
 + Scroll Bounce(Some)
 + Some Colours
 + Logo
