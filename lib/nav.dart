@@ -2,11 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mysunflower/addorremove.dart';
+import 'package:mysunflower/harmony_nav1_icons.dart';
 import 'package:mysunflower/history.dart';
 import 'package:mysunflower/home.dart';
 import 'package:mysunflower/my.dart';
 import 'package:mysunflower/screen_management/screen_manager.dart';
 import 'package:provider/provider.dart';
+
+import 'user_config/my_button.dart';
 
 var api2;
 
@@ -22,19 +25,27 @@ class NavBase extends StatefulWidget {
 
 class _NavBaseState extends State<NavBase> {
   late final List<Widget> _children;
+  late PageController _pageController;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _pageController = PageController();
     _children = [
       HomePage(api: widget.api, user: widget.user),
-      MoneyMgr(),
+      MoneyMgr(api:widget.api,user: widget.user,),
       History(
         api: widget.api,
         user: widget.user,
       ),
-      MyScreen()
+      MyScreen(user: widget.user, api: widget.api)
     ];
   }
 
@@ -51,9 +62,10 @@ class _NavBaseState extends State<NavBase> {
             ? Scaffold(
                 body:
                     buildTabletHorizontal(isTablet, isPortrait, screenManager),
-                floatingActionButton: buildReportBug(context))
+                //floatingActionButton: buildReportBug(context)
+              )
             : Scaffold(
-                body: _children[screenManager.screenIndex],
+                body: Container(child: _children[screenManager.screenIndex]),
                 floatingActionButton: buildReportBug(context),
                 bottomNavigationBar:
                     buildBottomNav(isTablet, isPortrait, screenManager)),
@@ -125,25 +137,26 @@ class _NavBaseState extends State<NavBase> {
     ScreenManager screenManager,
   ) {
     //Build Phone Bottom Nav Buttons
-    return TextButton(
+    return MyButton(
         onPressed: () {
           screenManager.changeScreen(buttonId);
         },
-        style: ButtonStyle(
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(7)))),
-            minimumSize: MaterialStateProperty.all(Size(90, 50)),
-            foregroundColor: (buttonId == screenManager.screenIndex)
-                ? MaterialStateProperty.all(Color.fromARGB(255, 10, 89, 247))
-                : MaterialStateProperty.all(
-                    Color.fromARGB(255, 144, 145, 147))),
+        backgroundColor: Colors.transparent,
+        borderRadius: 7,
+        height: 50,
+        textColor: buttonId == screenManager.screenIndex
+            ? Color.fromARGB(255, 10, 89, 247)
+            : Color.fromARGB(255, 144, 145, 147),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(iconData),
+          Icon(iconData,
+              color: buttonId == screenManager.screenIndex
+                  ? Color.fromARGB(255, 10, 89, 247)
+                  : Color.fromARGB(255, 144, 145, 147)),
           //SizedBox(width: 5),
           Text(label)
         ]));
   }
+
   buildTablet2NavBtn(
     int buttonId,
     IconData iconData,
@@ -159,7 +172,7 @@ class _NavBaseState extends State<NavBase> {
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(7)))),
-            minimumSize: MaterialStateProperty.all(Size(100,100)),
+            minimumSize: MaterialStateProperty.all(Size(100, 100)),
             foregroundColor: (buttonId == screenManager.screenIndex)
                 ? MaterialStateProperty.all(Color.fromARGB(255, 10, 89, 247))
                 : MaterialStateProperty.all(
@@ -170,20 +183,19 @@ class _NavBaseState extends State<NavBase> {
           Text(label)
         ]));
   }
+
   bottomNavPhone(ScreenManager screenManager) {
     return Container(
-      height: 51,
       width: double.infinity,
-      child: Column(children: [
-        //NavBar Item
-        Container(
-          height: 50,
-          alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-            child: Row(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            //NavBar Item
+            Row(
               children: [
-                buildPhoneNavBtn(0, Icons.home, 'Home', screenManager),
+                buildPhoneNavBtn(
+                    0, HarmonyNav1.ic_public_home, 'Home', screenManager),
                 Spacer(),
                 buildPhoneNavBtn(1, Icons.attach_money_rounded, 'Transactions',
                     screenManager),
@@ -193,10 +205,8 @@ class _NavBaseState extends State<NavBase> {
                 buildPhoneNavBtn(
                     3, Icons.account_circle_rounded, 'My', screenManager),
               ],
-            ),
-          ),
-        )
-      ]),
+            )
+          ]),
     );
   }
 
@@ -228,13 +238,12 @@ class _NavBaseState extends State<NavBase> {
           )
         ]));
   }
+
   bottomNavTabletHorizontal(ScreenManager screenManager) {
     return Container(
         height: double.infinity,
         width: 97,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           //NavBar Item
           Container(
             height: 500,
@@ -256,6 +265,7 @@ class _NavBaseState extends State<NavBase> {
           )
         ]));
   }
+
   buildBottomNav(bool isTablet, bool isPortrait, ScreenManager screenManager) {
     if (!isTablet) {
       return bottomNavPhone(screenManager);

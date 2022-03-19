@@ -21,7 +21,7 @@ class _HistoryState extends State<History> {
     super.initState();
     //print("Hello!");
     var data = [];
-    Uri uri = Uri.parse('http://127.0.0.1:8888/api/ott');
+    Uri uri = Uri.parse('http://192.168.0.29:8888/api/ott');
     var api = widget.api;
     var user = widget.user;
     http.get(uri, headers: {
@@ -29,7 +29,7 @@ class _HistoryState extends State<History> {
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://127.0.0.1:8888/api/history');
+      Uri uri2 = Uri.parse('http://192.168.0.29:8888/api/history');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'

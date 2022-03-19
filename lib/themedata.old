@@ -1,0 +1,45 @@
+ThemeData(
+        splashFactory: NoSplash.splashFactory,
+        fontFamily: 'HarmonyOS_Sans',
+        hintColor: Color.fromARGB(255, 101, 101, 101),
+        scaffoldBackgroundColor: Color.fromARGB(255, 241, 243, 245),
+        inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+                borderSide: BorderSide(width: 0, color: Colors.transparent)),
+            fillColor: Colors.white,
+            filled: true,
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(30)),
+            iconColor: Colors.black,
+            prefixIconColor: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: MaterialStateProperty.all(Color.fromRGBO(0, 0, 0, 0.1)),
+          backgroundColor: MaterialStateProperty.all(Color(0xFF0A59F7)),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          )),
+          elevation: MaterialStateProperty.all(0),
+        )),
+        textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+                overlayColor:
+                    MaterialStateProperty.all(Color.fromRGBO(0, 0, 0, 0.1)),
+                splashFactory: NoSplash.splashFactory,
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular((10)),
+                )))),
+        appBarTheme: AppBarTheme(
+            actionsIconTheme: IconThemeData(color: Colors.black),
+            elevation: 0,
+            backgroundColor: Color.fromARGB(255, 241, 243, 245)),
+        //splashColor: Colors.transparent,
+        popupMenuTheme: PopupMenuThemeData(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15)))),
+      ),

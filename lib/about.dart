@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:mysunflower/user_config/my_button.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -46,13 +47,18 @@ class _AboutPageState extends State<AboutPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        TextButton(
+                        MyButton(
+                          height: 55,
+                          width: double.infinity,
+                          borderRadius: 10,
+                          backgroundColor: Colors.transparent,
                           onPressed: () {
                             Navigator.pushNamed(context, '/about');
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(3.0),
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Row(
                                   children: [
@@ -96,7 +102,12 @@ class _AboutPageState extends State<AboutPage> {
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500)),
-                                Text("+852 00000000",style: TextStyle(fontWeight: FontWeight.w500,color: Color.fromARGB(129, 0, 0, 0)),),
+                                Text(
+                                  "+852 00000000",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromARGB(129, 0, 0, 0)),
+                                ),
                               ],
                             ),
                           ),
@@ -113,7 +124,12 @@ class _AboutPageState extends State<AboutPage> {
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500)),
-                                Text("meowtechopensource@gmail.com",style: TextStyle(fontWeight: FontWeight.w500,color: Color.fromARGB(129, 0, 0, 0)),),
+                                Text(
+                                  "meowtechopensource@gmail.com",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromARGB(129, 0, 0, 0)),
+                                ),
                               ],
                             ),
                           ),
@@ -133,7 +149,11 @@ class _AboutPageState extends State<AboutPage> {
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.all(13.0),
-          child: Text("Subject to the MySunflower Software License\nMySunflower, All rights reserved. (c) 2020-2022\nMade By Meow Tech Open Source",textAlign: TextAlign.center,style: TextStyle(color:Color.fromARGB(255, 95, 96, 97)),),
+          child: Text(
+            "Subject to the MySunflower Software License\nMySunflower, All rights reserved. (c) 2020-2022\nMade By Meow Tech Open Source",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color.fromARGB(255, 95, 96, 97)),
+          ),
         ),
       ),
     );

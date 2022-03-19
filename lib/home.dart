@@ -3,8 +3,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:local_auth/auth_strings.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:mysunflower/bouncing.dart';
+import 'package:mysunflower/dialog.dart';
 import 'package:mysunflower/screen_management/screen_manager.dart';
 import 'package:provider/provider.dart';
+
+import 'user_config/my_button.dart';
 
 class HomePage extends StatefulWidget {
   final api;
@@ -24,14 +30,27 @@ class _HomePageState extends State<HomePage> {
   var ischild = false;
   //TODO:Check if child and display.
   Widget build(BuildContext context) {
+    var shortestSide = MediaQuery.of(context).size.shortestSide;
+    final isTablet = shortestSide > 550;
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        floatingActionButton: Bouncing(
+          child: Icon(Icons.add),
+          onPress: () {},
+        ),
         appBar: AppBar(
             title: Text(
               "Home",
               style: TextStyle(fontSize: 30, color: Colors.black),
             ),
+            actions: <Widget>[
+              IconButton(
+                  onPressed: () async {
+                    await _showMenu(context);
+                  },
+                  icon: Icon(Icons.more_vert_rounded))
+            ],
             automaticallyImplyLeading: false),
         body: Container(
           height: double.infinity,
@@ -55,23 +74,23 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: 10),
                     Row(
                       children: [
-                        ElevatedButton(
-                          onPressed: () => screenManager.changeScreen(1),
-                          child: Text("Add"),
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: Size(
-                                  180, 39) // put the width and height you want
-                              ),
+                        ///  4 + 1 + 4 + 1 = 10
+                        Expanded(
+                          flex: 5,
+                          child: MyButton(
+                            onPressed: () => screenManager.changeScreen(1),
+                            child: Text("Add"),
+                          ),
                         ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () => screenManager.changeScreen(1),
-                          child: Text("Remove"),
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: Size(
-                                  180, 39) // put the width and height you want
-                              ),
-                        )
+                        Expanded(child: SizedBox(), flex: 1),
+                        Expanded(
+                          flex: 5,
+                          child: MyButton(
+                            onPressed: () => screenManager.changeScreen(1),
+                            child: Text("Remove"),
+                          ),
+                        ),
+                        Expanded(child: SizedBox(), flex: 1),
                       ],
                     ),
                     SizedBox(height: 10),
@@ -83,45 +102,42 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: 10),
                     Row(
                       children: [
-                        ElevatedButton(
-                          onPressed: () => screenManager.changeScreen(2),
-                          child: Text("View History"),
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: Size(
-                                  180, 39) // put the width and height you want
-                              ),
+                        Expanded(
+                          flex: 5,
+                          child: MyButton(
+                            onPressed: () => screenManager.changeScreen(2),
+                            child: Text("View History"),
+                          ),
                         ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () {
-                            var logout = widget.api;
-                            var user = widget.user;
-                            http.get(
-                                Uri.parse(
-                                    'http://127.0.0.1:8888/api/logoutapp'),
-                                headers: {
-                                  'authorization': 'Bearer $logout',
-                                  'user': '$user'
-                                }).then((response) {
-                              //print(user);
-                              if (jsonDecode(response.body)["value"] ==
-                                  "Completed") {
-                                Navigator.of(context).pop();
-                              }
-                            });
-                          },
-                          child: Text(
-                            "Logout",
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 232, 64, 38)),
-                          ),
-                          style: ButtonStyle(
-                            minimumSize:
-                                MaterialStateProperty.all(Size(180, 39)),
-                            backgroundColor: MaterialStateProperty.all(
-                                Color.fromARGB(10, 0, 0, 0)),
-                          ),
-                        )
+                        Expanded(flex: 1, child: SizedBox()),
+                        Expanded(
+                          flex: 5,
+                          child: MyButton(
+                              onPressed: () {
+                                var logout = widget.api;
+                                var user = widget.user;
+                                http.get(
+                                    Uri.parse(
+                                        'http://192.168.0.29:8888/api/logoutapp'),
+                                    headers: {
+                                      'authorization': 'Bearer $logout',
+                                      'user': '$user'
+                                    }).then((response) {
+                                  //print(user);
+                                  if (jsonDecode(response.body)["value"] ==
+                                      "Completed") {
+                                    Navigator.of(context).pop();
+                                  }
+                                });
+                              },
+                              child: Text(
+                                "Logout",
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 232, 64, 38)),
+                              ),
+                              backgroundColor: Color.fromARGB(10, 0, 0, 0)),
+                        ),
+                        Expanded(flex: 1, child: SizedBox()),
                       ],
                     ),
                     SizedBox(height: 10),
@@ -134,141 +150,44 @@ class _HomePageState extends State<HomePage> {
                       "HKD\$199",
                       style: TextStyle(fontSize: 15),
                     ),
-                    ElevatedButton(
+                    MyButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/settings');
                       },
                       child: Text("App Settings"),
-                      style: ElevatedButton.styleFrom(
-                          minimumSize:
-                              Size(180, 39) // put the width and height you want
-                          ),
                     ),
                     SizedBox(height: 5),
-                    ElevatedButton(
-                      onPressed: () => showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return Dialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0)),
-                              backgroundColor:
-                                  Colors.transparent, //this right here
-                              child: ClipRect(
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 15.0,
-                                    sigmaY: 15.0,
-                                  ),
-                                  child: Container(
-                                    height: 130,
-                                    decoration: new BoxDecoration(
-                                      color: Color.fromARGB(255, 255, 255, 255)
-                                          .withOpacity(0.9),
-                                      borderRadius: BorderRadius.circular(17),
-                                    ),
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(15.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Logout",
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 20,
-                                                fontFamily: "HarmonyOS_Sans"),
-                                          ),
-                                          Text(
-                                              "Are you sure you want to logout?"),
-                                          SizedBox(
-                                            height: 26,
-                                          ),
-                                          IntrinsicHeight(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Expanded(
-                                                  child: TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text(
-                                                        "Cancel",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    232,
-                                                                    64,
-                                                                    38)),
-                                                      ),
-                                                      style: ButtonStyle(
-                                                        shape: MaterialStateProperty.all<
-                                                                RoundedRectangleBorder>(
-                                                            RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            15)))),
-                                                      )),
-                                                ),
-                                                VerticalDivider(
-                                                  thickness: 1,
-                                                  width: 15,
-                                                  color: Color.fromRGBO(
-                                                      0, 0, 0, 0.2),
-                                                ),
-                                                Expanded(
-                                                  child: TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Text(
-                                                        "Done",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    10,
-                                                                    89,
-                                                                    247)),
-                                                      ),
-                                                      style: ButtonStyle(
-                                                        shape: MaterialStateProperty.all<
-                                                                RoundedRectangleBorder>(
-                                                            RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            15)))),
-                                                      )),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
+                    MyButton(
+                      onPressed: () => showPopup(isTablet, context),
+                      // onPressed: () async {
+                      //   bool didAuthenticate = false;
+                      //   var localAuth = LocalAuthentication();
+                      //   try {
+                      //     didAuthenticate = await localAuth.authenticate(
+                      //       androidAuthStrings: AndroidAuthMessages(signInTitle: "Add Pocket Money",),
+                      //       sensitiveTransaction: true,
+                      //         localizedReason:
+                      //             'Authenticate to proceed(Face/Fingerprint)',
+                                  
+                      //         biometricOnly: true);
+                      //   } catch (PlatformException) {
+                      //     print("Sorry, No Biom");
+                      //     try {
+                      //       var localAuth = LocalAuthentication();
+                      //       didAuthenticate =
+                      //           await localAuth.authenticate(
+                      //             sensitiveTransaction: true,
+                      //             androidAuthStrings: AndroidAuthMessages(signInTitle: "Add Pocket Money",),
+                      //               localizedReason: 'Authenticate to proceed(Phone Password)');
+                      //     }
+                      //     catch (PlatformException) {
+                      //       print("Sorry, No PIN Also");
+                      //       didAuthenticate = false;
+                      //     }
+                      //   }
+                      //   print(didAuthenticate);
+                      // },
                       child: Text("Dialog"),
-                      style: ElevatedButton.styleFrom(
-                          minimumSize:
-                              Size(180, 39) // put the width and height you want
-                          ),
                     ),
                   ],
                 ),
@@ -278,5 +197,43 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  _showMenu(BuildContext context) async {
+    await showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(300, 10, 0, 10),
+        items: [
+          PopupMenuItem(
+            height: 0,
+            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+            enabled: false,
+            child: TextButton(
+              child: Text("Child"),
+              onPressed: () {},
+              style: ButtonStyle(
+                minimumSize:
+                    MaterialStateProperty.all(Size(double.infinity, 50)),
+              ),
+            ),
+          ),
+          PopupMenuItem(
+            height: 0,
+            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+            enabled: false,
+            child: TextButton(
+              child: Text("Child"),
+              onPressed: () {
+                setState(() {
+                  Navigator.pop(context);
+                });
+              },
+              style: ButtonStyle(
+                minimumSize:
+                    MaterialStateProperty.all(Size(double.infinity, 50)),
+              ),
+            ),
+          ),
+        ]);
   }
 }

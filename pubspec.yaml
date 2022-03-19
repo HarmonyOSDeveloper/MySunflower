@@ -37,6 +37,12 @@ dependencies:
   flutter_bounce: ^1.1.0
   http: ^0.13.4
   provider: ^6.0.2
+  splash: ^1.1.0
+  local_auth: ^1.1.11
+  qr_flutter: ^4.0.0
+  fluttertoast: ^8.0.9
+  permission_handler: ^9.2.0
+  qr_code_scanner: ^0.7.0
 
 dev_dependencies:
   flutter_test:
@@ -99,3 +105,6 @@ flutter:
         - asset: fonts/HarmonyOS_Sans_TC_Medium.ttf
         - asset: fonts/HarmonyOS_Sans_TC_Regular.ttf
         - asset: fonts/HarmonyOS_Sans_TC_Thin.ttf
+    - family:  HarmonyNav1
+      fonts:
+        - asset: fonts/HarmonyNav1.ttf

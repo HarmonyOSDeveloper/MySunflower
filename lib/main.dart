@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:splash/splash.dart' as Splashes;
 import 'package:flutter/material.dart';
 import 'package:mysunflower/about.dart';
 import 'package:mysunflower/addorremove.dart';
@@ -9,17 +9,21 @@ import 'package:mysunflower/reportbug.dart';
 import 'package:mysunflower/screen_management/screen_manager.dart';
 import 'package:mysunflower/settings.dart';
 import 'package:http/http.dart' as http;
+import 'package:mysunflower/user_config/user_config.dart';
 import 'package:provider/provider.dart';
 
+var ServerIP = "192.168.0.29:8888";
 void main() {
   runApp(ChangeNotifierProvider(
     create: (context) => ScreenManager(),
     child: MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: LoginPage(),
       routes: {
         '/settings': (context) => Settings(),
         '/bug': (context) => ReportBug(),
-        '/about': (context) => AboutPage()
+        '/about': (context) => AboutPage(),
+        '/scan': (context) => QRViewExample(),
       },
       theme: ThemeData(
         splashFactory: NoSplash.splashFactory,
@@ -39,8 +43,8 @@ void main() {
         iconTheme: IconThemeData(color: Colors.black),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
-          splashFactory: NoSplash.splashFactory,
-          overlayColor:MaterialStateProperty.all(Color.fromRGBO(0, 0, 0, 0.1)),
+          // splashFactory: NoSplash.splashFactory,
+          overlayColor: MaterialStateProperty.all(Color.fromRGBO(0, 0, 0, 0.1)),
           backgroundColor: MaterialStateProperty.all(Color(0xFF0A59F7)),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -50,17 +54,21 @@ void main() {
         )),
         textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
-              overlayColor:MaterialStateProperty.all(Color.fromRGBO(0, 0, 0, 0.1)),
-              splashFactory: NoSplash.splashFactory,
+                overlayColor:
+                    MaterialStateProperty.all(Color.fromRGBO(0, 0, 0, 0.1)),
+                splashFactory: NoSplash.splashFactory,
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular((10)),
-        )))),
+                  borderRadius: BorderRadius.circular((10)),
+                )))),
         appBarTheme: AppBarTheme(
             actionsIconTheme: IconThemeData(color: Colors.black),
             elevation: 0,
             backgroundColor: Color.fromARGB(255, 241, 243, 245)),
-        splashColor: Colors.transparent,
+        //splashColor: Colors.transparent,
+        popupMenuTheme: PopupMenuThemeData(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15)))),
       ),
     ),
   ));
@@ -91,6 +99,8 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                //Testing:
+                TextButton(child: const Text('FlatButton'), onPressed: () {}),
                 // Title:
                 Text(
                   "Login To The System",
@@ -170,8 +180,8 @@ class _LoginPageState extends State<LoginPage> {
       String credentials = username.text + ":" + pw.text;
       Codec<String, String> stringToBase64 = utf8.fuse(base64);
       String encoded = stringToBase64.encode(credentials);
-
-      Uri uri = Uri.parse('http://127.0.0.1:8888/api/apitoken');
+      //First,Validate That It Is A Legit Sunflower-Compatable Server.
+      Uri uri = Uri.parse('http://$ServerIP/api/apitoken');
       http.get(uri,
           // Send authorization headers to the backend.
           headers: {
