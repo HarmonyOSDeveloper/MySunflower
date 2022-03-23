@@ -1,17 +1,17 @@
 # mysunflower
 
-A new Flutter project.
+Sunflower Client For Sunflower v4.0 or API v4.1
 
 ## TODO LIST:
-+ Animations
-+ “My” Screen
++ Animations **(90% Completed)** **Missing NavBar Anims**
++ “My” Screen **(Completed)**
 + Redirect Buttons **(FIXED:Custom Class Method)**
-+ Scroll Bounce(Some)
-+ Some Colours
-+ Logo
-+ Actual API Communication
++ Scroll Bounce **(Completed Most)**
++ Some Colours **(Completed)**
++ Logo **None**
++ Actual API Communication **(Completed)**
 + IMPORTANT:WHEN APP IS SWIPE AWAY OR KILLED, SEND API TO LOGOUT AND REMOVE TOKEN GETTER.
-+ Fingerprint Auth
++ Fingerprint Auth **(Completed)**
 
 # Server Source
 https://github.com/MTOSCentral/SunflowerDev
