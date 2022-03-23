@@ -137,7 +137,7 @@ class _Dialog3State extends State<Dialog3> {
             sigmaY: 15.0,
           ),
           child: Container(
-            height: 410,
+            height: 370,
             width: 550,
             decoration: new BoxDecoration(
               color: Color.fromARGB(255, 255, 255, 255).withOpacity(0.7),
@@ -148,9 +148,9 @@ class _Dialog3State extends State<Dialog3> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
                   child: Text(
-                    "One Time Transaction",
+                    "OTT碼",
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -161,27 +161,27 @@ class _Dialog3State extends State<Dialog3> {
                     size: 270.0,
                   ),
                 ),
-                Spacer(),
-                Center(
-                  child: Container(
-                      width: 250,
-                      height: 40,
-                      child: MyButton(
-                        borderRadius: 30,
-                        backgroundColor: Colors.transparent,
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          "Done",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 10, 89, 247)),
-                        ),
-                      )),
+                SizedBox(height: 5,),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Expanded(
+                    child: Container(
+                        width: 250,
+                        height: 40,
+                        child: MyButton(
+                          borderRadius: 30,
+                          backgroundColor: Colors.transparent,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "OK",
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 10, 89, 247)),
+                          ),
+                        )),
+                  ),
                 ),
-                SizedBox(
-                  height: 25,
-                )
               ],
             ),
           ),

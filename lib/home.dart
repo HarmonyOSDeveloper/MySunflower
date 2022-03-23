@@ -5,13 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:local_auth/auth_strings.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:mysunflower/addorremove.dart';
 import 'package:mysunflower/bouncing.dart';
 import 'package:mysunflower/dialog.dart';
 import 'package:mysunflower/screen_management/screen_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'user_config/my_button.dart';
-
+var ServerIP;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var prefs = await SharedPreferences.getInstance();
+  // Try reading data from the counter key. If it doesn't exist, return 0.
+  ServerIP = prefs.getString("ip") ?? "";
+}
 class HomePage extends StatefulWidget {
   final api;
   final user;
@@ -27,6 +35,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState(){
+    super.initState();
+    main();
+  }
   var ischild = false;
   //TODO:Check if child and display.
   Widget build(BuildContext context) {
@@ -41,7 +53,7 @@ class _HomePageState extends State<HomePage> {
         ),
         appBar: AppBar(
             title: Text(
-              "Home",
+              "主頁",
               style: TextStyle(fontSize: 30, color: Colors.black),
             ),
             actions: <Widget>[
@@ -64,10 +76,10 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        "Welcome to Sunflower Pocket Money Management System!"),
+                        "歡迎來到零用錢系統！"),
                     SizedBox(height: 14),
                     Text(
-                      "Money Transactions",
+                      "增值/提取 零用錢",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
@@ -79,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 5,
                           child: MyButton(
                             onPressed: () => screenManager.changeScreen(1),
-                            child: Text("Add"),
+                            child: Text("增值"),
                           ),
                         ),
                         Expanded(child: SizedBox(), flex: 1),
@@ -87,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 5,
                           child: MyButton(
                             onPressed: () => screenManager.changeScreen(1),
-                            child: Text("Remove"),
+                            child: Text("提取"),
                           ),
                         ),
                         Expanded(child: SizedBox(), flex: 1),
@@ -95,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "History&Account Operations",
+                      "記錄/登出",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
@@ -106,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                           flex: 5,
                           child: MyButton(
                             onPressed: () => screenManager.changeScreen(2),
-                            child: Text("View History"),
+                            child: Text("記錄"),
                           ),
                         ),
                         Expanded(flex: 1, child: SizedBox()),
@@ -118,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                                 var user = widget.user;
                                 http.get(
                                     Uri.parse(
-                                        'http://192.168.0.29:8888/api/logoutapp'),
+                                        'http://$ServerIP/api/logoutapp'),
                                     headers: {
                                       'authorization': 'Bearer $logout',
                                       'user': '$user'
@@ -131,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                                 });
                               },
                               child: Text(
-                                "Logout",
+                                "登出",
                                 style: TextStyle(
                                     color: Color.fromARGB(255, 232, 64, 38)),
                               ),
@@ -142,53 +154,53 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Current Balance",
+                      "餘額",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      "HKD\$199",
+                      "HKD\$$remainder",
                       style: TextStyle(fontSize: 15),
                     ),
-                    MyButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/settings');
-                      },
-                      child: Text("App Settings"),
-                    ),
+                    // MyButton(
+                    //   onPressed: () {
+                    //     Navigator.pushNamed(context, '/settings');
+                    //   },
+                    //   child: Text("App Settings"),
+                    // ),
                     SizedBox(height: 5),
-                    MyButton(
-                      onPressed: () => showPopup(isTablet, context),
-                      // onPressed: () async {
-                      //   bool didAuthenticate = false;
-                      //   var localAuth = LocalAuthentication();
-                      //   try {
-                      //     didAuthenticate = await localAuth.authenticate(
-                      //       androidAuthStrings: AndroidAuthMessages(signInTitle: "Add Pocket Money",),
-                      //       sensitiveTransaction: true,
-                      //         localizedReason:
-                      //             'Authenticate to proceed(Face/Fingerprint)',
+                    // MyButton(
+                    //   onPressed: () => showPopup(isTablet, context),
+                    //   // onPressed: () async {
+                    //   //   bool didAuthenticate = false;
+                    //   //   var localAuth = LocalAuthentication();
+                    //   //   try {
+                    //   //     didAuthenticate = await localAuth.authenticate(
+                    //   //       androidAuthStrings: AndroidAuthMessages(signInTitle: "Add Pocket Money",),
+                    //   //       sensitiveTransaction: true,
+                    //   //         localizedReason:
+                    //   //             'Authenticate to proceed(Face/Fingerprint)',
                                   
-                      //         biometricOnly: true);
-                      //   } catch (PlatformException) {
-                      //     print("Sorry, No Biom");
-                      //     try {
-                      //       var localAuth = LocalAuthentication();
-                      //       didAuthenticate =
-                      //           await localAuth.authenticate(
-                      //             sensitiveTransaction: true,
-                      //             androidAuthStrings: AndroidAuthMessages(signInTitle: "Add Pocket Money",),
-                      //               localizedReason: 'Authenticate to proceed(Phone Password)');
-                      //     }
-                      //     catch (PlatformException) {
-                      //       print("Sorry, No PIN Also");
-                      //       didAuthenticate = false;
-                      //     }
-                      //   }
-                      //   print(didAuthenticate);
-                      // },
-                      child: Text("Dialog"),
-                    ),
+                    //   //         biometricOnly: true);
+                    //   //   } catch (PlatformException) {
+                    //   //     print("Sorry, No Biom");
+                    //   //     try {
+                    //   //       var localAuth = LocalAuthentication();
+                    //   //       didAuthenticate =
+                    //   //           await localAuth.authenticate(
+                    //   //             sensitiveTransaction: true,
+                    //   //             androidAuthStrings: AndroidAuthMessages(signInTitle: "Add Pocket Money",),
+                    //   //               localizedReason: 'Authenticate to proceed(Phone Password)');
+                    //   //     }
+                    //   //     catch (PlatformException) {
+                    //   //       print("Sorry, No PIN Also");
+                    //   //       didAuthenticate = false;
+                    //   //     }
+                    //   //   }
+                    //   //   print(didAuthenticate);
+                    //   // },
+                    //   child: Text("Dialog"),
+                    // ),
                   ],
                 ),
               ),
@@ -209,7 +221,7 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
             enabled: false,
             child: TextButton(
-              child: Text("Child"),
+              child: Text("孩子"),
               onPressed: () {},
               style: ButtonStyle(
                 minimumSize:
@@ -222,7 +234,7 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
             enabled: false,
             child: TextButton(
-              child: Text("Child"),
+              child: Text("孩子"),
               onPressed: () {
                 setState(() {
                   Navigator.pop(context);

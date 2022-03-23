@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splash/splash.dart' as Splashes;
 import 'package:flutter/material.dart';
 import 'package:mysunflower/about.dart';
@@ -12,8 +14,14 @@ import 'package:http/http.dart' as http;
 import 'package:mysunflower/user_config/user_config.dart';
 import 'package:provider/provider.dart';
 
-var ServerIP = "192.168.0.29:8888";
-void main() {
+var ServerIP;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var prefs = await SharedPreferences.getInstance();
+  // Try reading data from the counter key. If it doesn't exist, return 0.
+  print("Running");
+  ServerIP = prefs.getString("ip") ?? "";
+  print(ServerIP);
   runApp(ChangeNotifierProvider(
     create: (context) => ScreenManager(),
     child: MaterialApp(
@@ -90,6 +98,23 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/settings').then((value) {
+                  setState(() async {
+                    WidgetsFlutterBinding.ensureInitialized();
+                    var prefs = await SharedPreferences.getInstance();
+                    // Try reading data from the counter key. If it doesn't exist, return 0.
+                    ServerIP = prefs.getString("ip") ?? "";
+                    print(ServerIP);
+                  });
+                });
+              },
+              icon: Icon(Icons.settings))
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
@@ -100,10 +125,10 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 //Testing:
-                TextButton(child: const Text('FlatButton'), onPressed: () {}),
+                //TextButton(child: const Text('FlatButton'), onPressed: () {}),
                 // Title:
                 Text(
-                  "Login To The System",
+                  "登入",
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 25),
@@ -116,10 +141,11 @@ class _LoginPageState extends State<LoginPage> {
 
                 ElevatedButton(
                   onPressed: () => tryLogin(context),
-                  child: Text("Login"),
+                  child: Text("登入"),
                   style: ElevatedButton.styleFrom(
                       minimumSize: Size(double.infinity, 45)),
-                )
+                ),
+                Text(ServerIP)
               ],
             ),
           ),
@@ -139,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
               borderSide: BorderSide.none,
               borderRadius: BorderRadius.circular(30),
             ),
-            hintText: 'Username',
+            hintText: '用戶',
           ),
         ),
       );
@@ -155,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
               borderSide: BorderSide.none,
               borderRadius: BorderRadius.circular(30),
             ),
-            hintText: 'Password',
+            hintText: '密碼',
             suffixIcon: IconButton(
               icon: Icon(
                 // Based on passwordVisible state choose the icon
@@ -174,43 +200,79 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
 
-  void tryLogin(BuildContext context) {
+  Future<void> tryLogin(BuildContext context) async {
     bool correctresp = false;
-    if (username.text != "" && pw.text != "") {
+    if (ServerIP == "") {
+      Fluttertoast.showToast(
+          backgroundColor: Color.fromARGB(255, 86, 84, 85),
+          msg: "請在設置中輸入服務器IP.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          fontSize: 16.0);
+    } else if (username.text != "" && pw.text != "") {
       String credentials = username.text + ":" + pw.text;
       Codec<String, String> stringToBase64 = utf8.fuse(base64);
       String encoded = stringToBase64.encode(credentials);
       //First,Validate That It Is A Legit Sunflower-Compatable Server.
+      var resp;
+      bool right = false;
+      try {
+        resp = await http.get(
+            Uri.parse("http://$ServerIP/api/islegitsunflowercompatableserver"));
+        right = true;
+      } catch (exception) {
+        print(exception);
+        Fluttertoast.showToast(
+            backgroundColor: Color.fromARGB(255, 86, 84, 85),
+            msg: "錯誤：無法訪問服務器，請嘗試重新連接到網絡或檢查服務器 IP/域。",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            fontSize: 16.0);
+      }
       Uri uri = Uri.parse('http://$ServerIP/api/apitoken');
-      http.get(uri,
-          // Send authorization headers to the backend.
-          headers: {
-            HttpHeaders.authorizationHeader: 'Basic $encoded'
-          }).then((response) {
-        //print(response.body);
-        if (jsonDecode(response.body)["value"].startsWith("ERR:")) {
-          correctresp = false;
-          //print(correctresp);
-        } else {
-          correctresp = true;
-        }
-        if (correctresp == true) {
-          var username1 = "";
-          setState(() {
-            username1 = username.text;
-            username.text = "";
-            pw.text = "";
+      if (right) {
+        if (resp.statusCode == 200) {
+          http.get(uri,
+              // Send authorization headers to the backend.
+              headers: {
+                HttpHeaders.authorizationHeader: 'Basic $encoded'
+              }).then((response) {
+            //print(response.body);
+            if (jsonDecode(response.body)["value"].startsWith("ERR:")) {
+              correctresp = false;
+              //print(correctresp);
+            } else {
+              correctresp = true;
+            }
+            if (correctresp == true) {
+              var username1 = "";
+              setState(() {
+                username1 = username.text;
+                username.text = "";
+                pw.text = "";
+              });
+              //print(username1);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NavBase(
+                      api: jsonDecode(response.body)["value"], user: username1),
+                ),
+              );
+            }
           });
-          //print(username1);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NavBase(
-                  api: jsonDecode(response.body)["value"], user: username1),
-            ),
-          );
+        } else {
+          Fluttertoast.showToast(
+              backgroundColor: Color.fromARGB(255, 86, 84, 85),
+              msg: "錯誤：無法訪問服務器，請嘗試重新連接到網絡或檢查服務器 IP/域。",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              fontSize: 16.0);
         }
-      });
+      }
     }
   }
 }

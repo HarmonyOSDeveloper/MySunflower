@@ -1,9 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:mysunflower/user_config/my_button.dart';
+import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+DateTime start = DateTime.now();
+DateTime end = DateTime.now();
+var dtc = TextEditingController();
+var ServerIP;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var prefs = await SharedPreferences.getInstance();
+  // Try reading data from the counter key. If it doesn't exist, return 0.
+  ServerIP = prefs.getString("ip") ?? "";
+}
 class History extends StatefulWidget {
   final api;
   final user;
@@ -21,15 +37,16 @@ class _HistoryState extends State<History> {
     super.initState();
     //print("Hello!");
     var data = [];
-    Uri uri = Uri.parse('http://192.168.0.29:8888/api/ott');
+    Uri uri = Uri.parse('http://$ServerIP/api/ott');
     var api = widget.api;
     var user = widget.user;
+    main();
     http.get(uri, headers: {
       'authorization': 'Bearer $api',
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://192.168.0.29:8888/api/history');
+      Uri uri2 = Uri.parse('http://$ServerIP/api/history');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -50,7 +67,7 @@ class _HistoryState extends State<History> {
     return Scaffold(
       appBar: AppBar(
           title: Text(
-            "History",
+            "記錄",
             style: TextStyle(fontSize: 30, color: Colors.black),
           ),
           automaticallyImplyLeading: false),
@@ -60,30 +77,303 @@ class _HistoryState extends State<History> {
           child: Column(children: [
             Row(
               children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 40, maxWidth: 240),
+                Expanded(
+                  flex: 8,
                   child: TextField(
+                    controller: dtc,
+                    readOnly: true,
                     decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 4.0, horizontal: 12.0),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      hintText: 'Search',
-                    ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 12.0),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        hintText: '搜索',
+                        prefixIcon: IconButton(
+                          icon: Icon(Icons.date_range),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    backgroundColor: Colors.transparent,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0)),
+                                    child: ClipRect(
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                          sigmaX: 15.0,
+                                          sigmaY: 15.0,
+                                        ),
+                                        child: Container(
+                                          height: 500,
+                                          width: 550,
+                                          decoration: new BoxDecoration(
+                                            color: Color.fromARGB(
+                                                    255, 255, 255, 255)
+                                                .withOpacity(1),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Column(
+                                            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(15.0),
+                                                child: Text(
+                                                  "搜索",
+                                                  style: TextStyle(
+                                                      fontSize: 25,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                              ),
+                                              Center(
+                                                  child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(15, 0, 0, 0),
+                                                    child: Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Text(
+                                                          "開始日期：",
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        )),
+                                                  ),
+                                                  DatePickerWidget(
+                                                    initialDate: DateTime.now(),
+                                                    onChange: (dateTime,
+                                                            selectedIndex) =>
+                                                        {start = dateTime},
+                                                  ),
+                                                ],
+                                              )),
+                                              Spacer(),
+                                              Center(
+                                                  child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(15, 0, 0, 0),
+                                                    child: Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Text(
+                                                          "結束日期：",
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        )),
+                                                  ),
+                                                  DatePickerWidget(
+                                                    initialDate: DateTime.now(),
+                                                    onChange: (dateTime,
+                                                            selectedIndex) =>
+                                                        {end = dateTime},
+                                                  ),
+                                                ],
+                                              )),
+                                              SizedBox(height: 5,),
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Expanded(
+                                                  child: Container(
+                                                      width: 250,
+                                                      height: 40,
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: MyButton(
+                                                              backgroundColor: Colors.transparent,
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                dtc.text = "";
+                                                                start = DateTime.now();
+                                                                end = DateTime.now();
+                                                                setState(() {});
+                                                              },
+                                                              child: Text(
+                                                                "清除過濾器",
+                                                                style: TextStyle(
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            232,
+                                                                            64,
+                                                                            38)),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 25,
+                                                            child:
+                                                                VerticalDivider(
+                                                              thickness: 1,
+                                                              width: 15,
+                                                              color:
+                                                                  Color.fromRGBO(
+                                                                      0,
+                                                                      0,
+                                                                      0,
+                                                                      0.2),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            child: MyButton(
+                                                              borderRadius: 30,
+                                                              backgroundColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              onPressed: () {
+                                                                if (start.isBefore(
+                                                                    end)) {
+                                                                  dtc.text = DateFormat(
+                                                                              "y-M-d")
+                                                                          .format(
+                                                                              start) +
+                                                                      " - " +
+                                                                      DateFormat(
+                                                                              "y-M-d")
+                                                                          .format(
+                                                                              end);
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  setState(() {});
+                                                                } else {
+                                                                  Fluttertoast.showToast(
+                                                                      backgroundColor:
+                                                                          Color.fromARGB(
+                                                                              255,
+                                                                              86,
+                                                                              84,
+                                                                              85),
+                                                                      msg:
+                                                                          "錯誤：開始日期大於結束日期。",
+                                                                      toastLength: Toast
+                                                                          .LENGTH_SHORT,
+                                                                      gravity:
+                                                                          ToastGravity
+                                                                              .BOTTOM,
+                                                                      timeInSecForIosWeb:
+                                                                          1,
+                                                                      fontSize:
+                                                                          16.0);
+                                                                }
+                                                              },
+                                                              child: Text(
+                                                                "OK",
+                                                                style: TextStyle(
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            10,
+                                                                            89,
+                                                                            247)),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 5,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                });
+                          },
+                        )),
                   ),
                 ),
                 SizedBox(width: 7),
-                ElevatedButton(
-                  onPressed: () {
-                    //Navigator.pushNamed(context, '/home');
-                  },
-                  child: Text("Search"),
-                  style: ElevatedButton.styleFrom(
-                      minimumSize:
-                          Size(70, 45) // put the width and height you want
-                      ),
+                Expanded(
+                  flex: 2,
+                  child: MyButton(
+                    width: 80,
+                    onPressed: () {
+                      print(dtc.text);
+                      if (dtc.text != "") {
+                        //print("Hello!");
+                        var data = [];
+                        Uri uri = Uri.parse('http://$ServerIP/api/ott');
+                        var api = widget.api;
+                        var user = widget.user;
+                        http.get(uri, headers: {
+                          'authorization': 'Bearer $api',
+                          'user': '$user'
+                        }).then((response) {
+                          var authkey = jsonDecode(response.body)["value"];
+                          Uri uri2 =
+                              Uri.parse('http://$ServerIP/api/history');
+                          http.get(uri2, headers: {
+                            'authorization': 'Bearer $authkey',
+                            'user': '$user',
+                            'start': dtc.text.split(" - ")[0],
+                            'end': dtc.text.split(" - ")[1]
+                          }).then((response2) {
+                            //print("$authkey");
+                            //print(response2.body);
+                            data = jsonDecode(response2.body);
+                            _listb = [];
+                            for (var d in data) {
+                              _listb.add(d);
+                              //print(d);
+                            }
+                            setState(() {});
+                          });
+                        });
+                      } else {
+                        //print("Hello!");
+                        var data = [];
+                        Uri uri = Uri.parse('http://$ServerIP/api/ott');
+                        var api = widget.api;
+                        var user = widget.user;
+                        http.get(uri, headers: {
+                          'authorization': 'Bearer $api',
+                          'user': '$user'
+                        }).then((response) {
+                          var authkey = jsonDecode(response.body)["value"];
+                          Uri uri2 =
+                              Uri.parse('http://$ServerIP/api/history');
+                          http.get(uri2, headers: {
+                            'authorization': 'Bearer $authkey',
+                            'user': '$user',
+                          }).then((response2) {
+                            //print("$authkey");
+                            //print(response2.body);
+                            data = jsonDecode(response2.body);
+                            _listb = [];
+                            for (var d in data) {
+                              _listb.add(d);
+                              //print(d);
+                            }
+                            setState(() {});
+                          });
+                        });
+                      }
+                    },
+                    child: Text("搜索"),
+                  ),
                 ),
               ],
               //TODO:Add The List view and/or the dialog, do it later.
@@ -108,7 +398,7 @@ class _HistoryState extends State<History> {
                             Expanded(
                                 flex: 2,
                                 child: Text(
-                                  "Date",
+                                  "日期",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 )),
                             Expanded(
@@ -116,7 +406,7 @@ class _HistoryState extends State<History> {
                                 child: Align(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      "Pocket Money",
+                                      "零用錢",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ))),
@@ -125,7 +415,7 @@ class _HistoryState extends State<History> {
                                 child: Align(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      "Adult",
+                                      "成人",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ))),
@@ -134,7 +424,7 @@ class _HistoryState extends State<History> {
                                 child: Align(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      "Child",
+                                      "孩子",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ))),
@@ -143,7 +433,7 @@ class _HistoryState extends State<History> {
                                 child: Align(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      "Reason",
+                                      "零用錢",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ))),
@@ -163,49 +453,45 @@ class _HistoryState extends State<History> {
                                 child: Row(
                                   children: [
                                     Expanded(
-                                flex: 2,
-                                child: Text(
-                                  _listb[index]["date"],
-                                  style: TextStyle(),
-                                )),
-                            Expanded(
-                                flex: 2,
-                                child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _listb[index]["action"]+
-                                      _listb[index]["money"],
-                                      style: TextStyle(
-                                          ),
-                                    ))),
-                            Expanded(
-                                flex: 1,
-                                child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _listb[index]["from"],
-                                      style: TextStyle(
-                                          ),
-                                    ))),
-                            Expanded(
-                                flex: 1,
-                                child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _listb[index]["to"],
-                                      style: TextStyle(
-                                          ),
-                                    ))),
-                            Expanded(
-                                flex: 2,
-                                child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      _listb[index]["reason"],
-                                      style: TextStyle(
-                                          ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ))),
+                                        flex: 2,
+                                        child: Text(
+                                          _listb[index]["date"],
+                                          style: TextStyle(),
+                                        )),
+                                    Expanded(
+                                        flex: 2,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              _listb[index]["action"] +
+                                                  _listb[index]["money"],
+                                              style: TextStyle(),
+                                            ))),
+                                    Expanded(
+                                        flex: 1,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              _listb[index]["from"],
+                                              style: TextStyle(),
+                                            ))),
+                                    Expanded(
+                                        flex: 1,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              _listb[index]["to"],
+                                              style: TextStyle(),
+                                            ))),
+                                    Expanded(
+                                        flex: 2,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              _listb[index]["reason"],
+                                              style: TextStyle(),
+                                              overflow: TextOverflow.ellipsis,
+                                            ))),
                                   ],
                                 ),
                               ),

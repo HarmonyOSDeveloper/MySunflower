@@ -43,6 +43,10 @@ dependencies:
   fluttertoast: ^8.0.9
   permission_handler: ^9.2.0
   qr_code_scanner: ^0.7.0
+  mobile_scanner: ^1.0.0
+  flutter_holo_date_picker: ^1.0.3
+  intl: ^0.17.0
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:

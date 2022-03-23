@@ -16,7 +16,7 @@ class _AboutPageState extends State<AboutPage> {
     return Scaffold(
       appBar: AppBar(
           leading: BackButton(color: Colors.black),
-          title: Text("About", style: TextStyle(color: Colors.black))),
+          title: Text("關於", style: TextStyle(color: Colors.black))),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -33,7 +33,7 @@ class _AboutPageState extends State<AboutPage> {
                 ),
               ),
               Text(
-                "Version 9.9.9999(C2PR5)",
+                "版本 1.0.0001(Beta)",
                 style: TextStyle(color: Color.fromARGB(255, 102, 102, 102)),
               ),
               Padding(
@@ -56,7 +56,7 @@ class _AboutPageState extends State<AboutPage> {
                             Navigator.pushNamed(context, '/about');
                           },
                           child: Padding(
-                            padding: const EdgeInsets.all(3.0),
+                            padding: const EdgeInsets.all(9.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -66,12 +66,12 @@ class _AboutPageState extends State<AboutPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text("Official Website",
+                                        Text("官方網站",
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
-                                          "https://google.com",
+                                          "Unavalible.com",
                                           style: TextStyle(
                                             color: Color.fromARGB(129, 0, 0, 0),
                                           ),
@@ -98,7 +98,7 @@ class _AboutPageState extends State<AboutPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Service Hotline",
+                                Text("服務熱線",
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500)),
@@ -120,7 +120,7 @@ class _AboutPageState extends State<AboutPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Support E-Mail",
+                                Text("技術支持電子郵件",
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500)),
@@ -150,7 +150,7 @@ class _AboutPageState extends State<AboutPage> {
         child: Padding(
           padding: const EdgeInsets.all(13.0),
           child: Text(
-            "Subject to the MySunflower Software License\nMySunflower, All rights reserved. (c) 2020-2022\nMade By Meow Tech Open Source",
+            "受 MySunflower 軟件許可的約束\nMySunflower，保留所有權利。 (c) 2020-2022\n由 Meow Tech Open Source製成",
             textAlign: TextAlign.center,
             style: TextStyle(color: Color.fromARGB(255, 95, 96, 97)),
           ),

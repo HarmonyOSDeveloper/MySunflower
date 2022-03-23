@@ -9,11 +9,18 @@ import 'package:local_auth/local_auth.dart';
 import 'package:mysunflower/dialog.dart';
 import 'package:mysunflower/user_config/my_button.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 var role = "Unknown";
 var version = "Sunflower v0.0.0";
 var remainder = 0;
-
+var ServerIP;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var prefs = await SharedPreferences.getInstance();
+  // Try reading data from the counter key. If it doesn't exist, return 0.
+  ServerIP = prefs.getString("ip") ?? "";
+}
 class MyScreen extends StatefulWidget {
   final user;
   final api;
@@ -28,10 +35,11 @@ class _MyScreenState extends State<MyScreen> {
   void initState() {
     super.initState();
     //print("Hello!");
-    Uri uri = Uri.parse('http://192.168.0.29:8888/api/ott');
+    main();
+    Uri uri = Uri.parse('http://$ServerIP/api/ott');
     var api = widget.api;
     var user = widget.user;
-    Uri uri3 = Uri.parse('http://192.168.0.29:8888/api/info');
+    Uri uri3 = Uri.parse('http://$ServerIP/api/info');
     http.get(uri3).then((response3) {
       var data3 = jsonDecode(response3.body);
       print(data3);
@@ -43,7 +51,7 @@ class _MyScreenState extends State<MyScreen> {
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://192.168.0.29:8888/api/isadult');
+      Uri uri2 = Uri.parse('http://$ServerIP/api/isadult');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -67,7 +75,7 @@ class _MyScreenState extends State<MyScreen> {
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://192.168.0.29:8888/api/left');
+      Uri uri2 = Uri.parse('http://$ServerIP/api/left');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -137,7 +145,7 @@ class _MyScreenState extends State<MyScreen> {
                       Container(
                         width: 120,
                         child: Column(
-                          children: [Text("HKD\$$remainder"), Text("Amount")],
+                          children: [Text("HKD\$$remainder"), Text("餘額")],
                         ),
                       ),
                       Container(
@@ -149,7 +157,7 @@ class _MyScreenState extends State<MyScreen> {
                       Container(
                         width: 120,
                         child: Column(
-                          children: [Text(version), Text("System")],
+                          children: [Text(version), Text("系統")],
                         ),
                       )
                     ],
@@ -189,7 +197,7 @@ class _MyScreenState extends State<MyScreen> {
                       children: [
                         Row(
                           children: [
-                            Text("Settings",
+                            Text("設置",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w500)),
@@ -221,7 +229,7 @@ class _MyScreenState extends State<MyScreen> {
                       children: [
                         Row(
                           children: [
-                            Text("About",
+                            Text("關於",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w500)),
@@ -250,11 +258,11 @@ class _MyScreenState extends State<MyScreen> {
                     try {
                       didAuthenticate = await localAuth.authenticate(
                           androidAuthStrings: AndroidAuthMessages(
-                            signInTitle: "Show My One Time Auth Code",
+                            signInTitle: "顯示我的一次性驗證碼",
                           ),
                           sensitiveTransaction: true,
                           localizedReason:
-                              'Authenticate to proceed(Face/Fingerprint)',
+                              '驗證以繼續（人臉/指紋）',
                           biometricOnly: true);
                     } catch (PlatformException) {
                       print("Sorry, No Biom");
@@ -263,15 +271,15 @@ class _MyScreenState extends State<MyScreen> {
                         didAuthenticate = await localAuth.authenticate(
                             sensitiveTransaction: true,
                             androidAuthStrings: AndroidAuthMessages(
-                              signInTitle: "Show My One Time Auth Code",
+                              signInTitle: "顯示我的一次性驗證碼",
                             ),
                             localizedReason:
-                                'Authenticate to proceed(Phone Password)');
+                                '驗證以繼續（PIN/Password）');
                       } catch (PlatformException) {
                         Fluttertoast.showToast(
                             backgroundColor: Color.fromARGB(255, 86, 84, 85),
                             msg:
-                                "Error: You either don't have a PIN/Password Setup or did not allow the transaction, your action is canceled",
+                                "錯誤：您沒有 PIN/密碼設置或不允許，您的操作被取消",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
                             timeInSecForIosWeb: 1,
@@ -280,7 +288,7 @@ class _MyScreenState extends State<MyScreen> {
                       }
                     }
                     if (didAuthenticate) {
-                      Uri uri = Uri.parse('http://192.168.0.29:8888/api/ott');
+                      Uri uri = Uri.parse('http://$ServerIP/api/ott');
                       var response = await http.get(uri, headers: {
                         'authorization': 'Bearer ${widget.api}',
                         'user': '${widget.user}'
@@ -296,7 +304,7 @@ class _MyScreenState extends State<MyScreen> {
                       Fluttertoast.showToast(
                           backgroundColor: Color.fromARGB(255, 86, 84, 85),
                           msg:
-                              "Error: You either don't have a PIN/Password Setup or did not allow the transaction, your action is canceled",
+                              "錯誤：您沒有 PIN/密碼設置或不允許，您的操作被取消",
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
                           timeInSecForIosWeb: 1,
@@ -309,7 +317,7 @@ class _MyScreenState extends State<MyScreen> {
                       children: [
                         Row(
                           children: [
-                            Text("My One-Time QR(Used For Trasnaction)",
+                            Text("我的一次性二維碼",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w500)),
@@ -335,7 +343,7 @@ class _MyScreenState extends State<MyScreen> {
                       Navigator.of(context).pop();
                     },
                     child: Text(
-                      "Logout",
+                      "登出",
                       style: TextStyle(color: Color.fromARGB(255, 232, 64, 38)),
                     ),
                     backgroundColor: Color.fromARGB(10, 0, 0, 0))

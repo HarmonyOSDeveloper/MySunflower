@@ -40,7 +40,10 @@ class _NavBaseState extends State<NavBase> {
     _pageController = PageController();
     _children = [
       HomePage(api: widget.api, user: widget.user),
-      MoneyMgr(api:widget.api,user: widget.user,),
+      MoneyMgr(
+        api: widget.api,
+        user: widget.user,
+      ),
       History(
         api: widget.api,
         user: widget.user,
@@ -66,7 +69,7 @@ class _NavBaseState extends State<NavBase> {
               )
             : Scaffold(
                 body: Container(child: _children[screenManager.screenIndex]),
-                floatingActionButton: buildReportBug(context),
+                // floatingActionButton: buildReportBug(context),
                 bottomNavigationBar:
                     buildBottomNav(isTablet, isPortrait, screenManager)),
       ),
@@ -143,7 +146,7 @@ class _NavBaseState extends State<NavBase> {
         },
         backgroundColor: Colors.transparent,
         borderRadius: 7,
-        height: 50,
+        height: 57,
         textColor: buttonId == screenManager.screenIndex
             ? Color.fromARGB(255, 10, 89, 247)
             : Color.fromARGB(255, 144, 145, 147),
@@ -192,19 +195,28 @@ class _NavBaseState extends State<NavBase> {
           mainAxisSize: MainAxisSize.min,
           children: [
             //NavBar Item
-            Row(
-              children: [
-                buildPhoneNavBtn(
-                    0, HarmonyNav1.ic_public_home, 'Home', screenManager),
-                Spacer(),
-                buildPhoneNavBtn(1, Icons.attach_money_rounded, 'Transactions',
-                    screenManager),
-                Spacer(),
-                buildPhoneNavBtn(2, Icons.history, 'History', screenManager),
-                Spacer(),
-                buildPhoneNavBtn(
-                    3, Icons.account_circle_rounded, 'My', screenManager),
-              ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: buildPhoneNavBtn(
+                        0, HarmonyNav1.ic_public_home, '主頁', screenManager),
+                  ),
+                  Expanded(
+                    child: buildPhoneNavBtn(1, Icons.attach_money_rounded,
+                        '增提', screenManager),
+                  ),
+                  Expanded(
+                    child: buildPhoneNavBtn(
+                        2, Icons.history, '記錄', screenManager),
+                  ),
+                  Expanded(
+                    child: buildPhoneNavBtn(
+                        3, Icons.account_circle_rounded, '我的', screenManager),
+                  )
+                ],
+              ),
             )
           ]),
     );
@@ -223,15 +235,15 @@ class _NavBaseState extends State<NavBase> {
               padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
               child: Row(
                 children: [
-                  buildTabletNavBtn(0, Icons.home, 'Home', screenManager),
+                  buildTabletNavBtn(0, Icons.home, '主頁', screenManager),
                   Spacer(),
                   buildTabletNavBtn(1, Icons.attach_money_rounded,
-                      'Transactions', screenManager),
+                      '增提', screenManager),
                   Spacer(),
-                  buildTabletNavBtn(2, Icons.history, 'History', screenManager),
+                  buildTabletNavBtn(2, Icons.history, '記錄', screenManager),
                   Spacer(),
                   buildTabletNavBtn(
-                      3, Icons.account_circle_rounded, 'My', screenManager),
+                      3, Icons.account_circle_rounded, '我的', screenManager),
                 ],
               ),
             ),
@@ -251,15 +263,15 @@ class _NavBaseState extends State<NavBase> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildTablet2NavBtn(0, Icons.home, 'Home', screenManager),
+                buildTablet2NavBtn(0, Icons.home, '主頁', screenManager),
                 Spacer(),
                 buildTablet2NavBtn(1, Icons.attach_money_rounded,
-                    'Transactions', screenManager),
+                    '增提', screenManager),
                 Spacer(),
-                buildTablet2NavBtn(2, Icons.history, 'History', screenManager),
+                buildTablet2NavBtn(2, Icons.history, '記錄', screenManager),
                 Spacer(),
                 buildTablet2NavBtn(
-                    3, Icons.account_circle_rounded, 'My', screenManager),
+                    3, Icons.account_circle_rounded, '我的', screenManager),
               ],
             ),
           )
