@@ -161,13 +161,13 @@ class _Dialog3State extends State<Dialog3> {
                     size: 270.0,
                   ),
                 ),
-                SizedBox(height: 5,),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Expanded(
-                    child: Container(
-                        width: 250,
-                        height: 40,
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: SizedBox(
+                        width: 270,
                         child: MyButton(
                           borderRadius: 30,
                           backgroundColor: Colors.transparent,
@@ -179,9 +179,12 @@ class _Dialog3State extends State<Dialog3> {
                             style: TextStyle(
                                 color: Color.fromARGB(255, 10, 89, 247)),
                           ),
-                        )),
-                  ),
-                ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                  ],
+                )
               ],
             ),
           ),

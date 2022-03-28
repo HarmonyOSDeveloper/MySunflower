@@ -1,31 +1,26 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:local_auth/auth_strings.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:mysunflower/history.dart';
+
 import 'package:mysunflower/user_config/my_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'server_ip_management/server_ip_manager.dart';
+
 //import 'package:qr_code_scanner/qr_code_scanner.dart';
 var remainder = 0;
 var role;
 var camcode;
 bool grant = false;
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  var prefs = await SharedPreferences.getInstance();
-  // Try reading data from the counter key. If it doesn't exist, return 0.
-  ServerIP = prefs.getString("ip") ?? "";
-}
+
 class MoneyMgr extends StatefulWidget {
   final api;
   final user;
@@ -40,9 +35,13 @@ class _MoneyMgrState extends State<MoneyMgr> {
   var amount = TextEditingController();
   var childuname = TextEditingController();
   var reason = TextEditingController();
+  late String serverIp;
+
+  @override
   void initState() {
     super.initState();
-    Uri uri = Uri.parse('http://$ServerIP/api/ott');
+    serverIp = ServerIpManager.instance.ip;
+    Uri uri = Uri.parse('http://$serverIp/api/ott');
     var api = widget.api;
     var user = widget.user;
     http.get(uri, headers: {
@@ -50,7 +49,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://$ServerIP/api/isadult');
+      Uri uri2 = Uri.parse('http://$serverIp/api/isadult');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -74,7 +73,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://$ServerIP/api/left');
+      Uri uri2 = Uri.parse('http://$serverIp/api/left');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -88,7 +87,6 @@ class _MoneyMgrState extends State<MoneyMgr> {
         });
       });
     });
-    main();
   }
 
   @override
@@ -148,20 +146,22 @@ class _MoneyMgrState extends State<MoneyMgr> {
             ),
             ConstrainedBox(
               constraints: BoxConstraints(
-                  maxHeight: double.infinity, maxWidth: double.infinity),
-              child: TextField(
-                controller: reason,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 15.0),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(30),
+                  maxHeight: 40, maxWidth: double.infinity,minHeight: 40),
+              child: Container(
+                child: TextField(
+                  controller: reason,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 15.0),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    hintText: "原因",
                   ),
-                  hintText: "原因",
+                  keyboardType: TextInputType.multiline,
+                  //maxLines: null,
                 ),
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
               ),
             ),
             SizedBox(height: 15),
@@ -175,8 +175,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                         if (amount.text != "" &&
                             reason.text != "" &&
                             childuname.text != "") {
-                          Uri uri =
-                              Uri.parse('http://$ServerIP/api/ott');
+                          Uri uri = Uri.parse('http://$serverIp/api/ott');
                           var api = widget.api;
                           var user = widget.user;
                           http.get(uri, headers: {
@@ -192,8 +191,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                                     signInTitle: "增值",
                                   ),
                                   sensitiveTransaction: true,
-                                  localizedReason:
-                                      '驗證以繼續（人臉/指紋）',
+                                  localizedReason: '驗證以繼續（人臉/指紋）',
                                   biometricOnly: true);
                             } catch (PlatformException) {
                               print("Sorry, No Biom");
@@ -204,8 +202,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                                     androidAuthStrings: AndroidAuthMessages(
                                       signInTitle: "增值",
                                     ),
-                                    localizedReason:
-                                        '驗證以繼續(PIN/Password)');
+                                    localizedReason: '驗證以繼續(PIN/Password)');
                               } catch (PlatformException) {
                                 print("Sorry, No PIN Also");
                                 didAuthenticate = false;
@@ -213,8 +210,8 @@ class _MoneyMgrState extends State<MoneyMgr> {
                             }
                             if (didAuthenticate) {
                               var authkey = jsonDecode(response.body)["value"];
-                              Uri uri2 = Uri.parse(
-                                  'http://$ServerIP/api/addmoney');
+                              Uri uri2 =
+                                  Uri.parse('http://$serverIp/api/addmoney');
                               http.get(uri2, headers: {
                                 'authorization': 'Bearer $authkey',
                                 'user': '$user',
@@ -254,8 +251,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                               Fluttertoast.showToast(
                                   backgroundColor:
                                       Color.fromARGB(255, 86, 84, 85),
-                                  msg:
-                                      "錯誤：您沒有 PIN/密碼設置或不允許，失敗",
+                                  msg: "錯誤：您沒有 PIN/密碼設置或不允許，失敗",
                                   toastLength: Toast.LENGTH_SHORT,
                                   gravity: ToastGravity.BOTTOM,
                                   timeInSecForIosWeb: 1,
@@ -294,8 +290,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                         if (amount.text != "" &&
                             reason.text != "" &&
                             childuname.text != "") {
-                          Uri uri =
-                              Uri.parse('http://$ServerIP/api/ott');
+                          Uri uri = Uri.parse('http://$serverIp/api/ott');
                           var api = widget.api;
                           var user = widget.user;
                           http.get(uri, headers: {
@@ -311,8 +306,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                                     signInTitle: "提取",
                                   ),
                                   sensitiveTransaction: true,
-                                  localizedReason:
-                                      '驗證以繼續（人臉/指紋）',
+                                  localizedReason: '驗證以繼續（人臉/指紋）',
                                   biometricOnly: true);
                             } catch (PlatformException) {
                               print("Sorry, No Biom");
@@ -323,8 +317,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                                     androidAuthStrings: AndroidAuthMessages(
                                       signInTitle: "提取",
                                     ),
-                                    localizedReason:
-                                        '驗證以繼續(Password/PIN)');
+                                    localizedReason: '驗證以繼續(Password/PIN)');
                               } catch (PlatformException) {
                                 print("Sorry, No PIN Also");
                                 didAuthenticate = false;
@@ -337,8 +330,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                                 Fluttertoast.showToast(
                                     backgroundColor:
                                         Color.fromARGB(255, 86, 84, 85),
-                                    msg:
-                                        "錯誤：要使用此功能，請給我們相機權限",
+                                    msg: "錯誤：要使用此功能，請給我們相機權限",
                                     toastLength: Toast.LENGTH_SHORT,
                                     gravity: ToastGravity.BOTTOM,
                                     timeInSecForIosWeb: 1,
@@ -347,13 +339,14 @@ class _MoneyMgrState extends State<MoneyMgr> {
                                 grant = true;
                               }
                               camcode = "";
-                              Future pushNamed = Navigator.pushNamed(context, "/scan");
+                              Future pushNamed =
+                                  Navigator.pushNamed(context, "/scan");
                               pushNamed.then((value) {
                                 print("Running");
                                 var authkey =
                                     jsonDecode(response.body)["value"];
                                 Uri uri2 = Uri.parse(
-                                    'http://$ServerIP/api/removemoney');
+                                    'http://$serverIp/api/removemoney');
                                 if (camcode.toString() == "null") {
                                   print("IS NULL!");
                                   camcode = "";
@@ -364,7 +357,8 @@ class _MoneyMgrState extends State<MoneyMgr> {
                                   'money': amount.text,
                                   'child': childuname.text,
                                   'notes': reason.text.replaceAll("\n", " "),
-                                  'Authorization2': "Bearer " + camcode.toString()
+                                  'Authorization2':
+                                      "Bearer " + camcode.toString()
                                 }).then((response2) {
                                   print(response2.body);
                                   String data =
@@ -399,8 +393,7 @@ class _MoneyMgrState extends State<MoneyMgr> {
                               Fluttertoast.showToast(
                                   backgroundColor:
                                       Color.fromARGB(255, 86, 84, 85),
-                                  msg:
-                                      "錯誤：您沒有 PIN/密碼設置或不允許，失敗",
+                                  msg: "錯誤：您沒有 PIN/密碼設置或不允許，失敗",
                                   toastLength: Toast.LENGTH_SHORT,
                                   gravity: ToastGravity.BOTTOM,
                                   timeInSecForIosWeb: 1,

@@ -9,18 +9,23 @@ import 'package:local_auth/local_auth.dart';
 import 'package:mysunflower/dialog.dart';
 import 'package:mysunflower/user_config/my_button.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'server_ip_management/server_ip_manager.dart';
 
 var role = "Unknown";
 var version = "Sunflower v0.0.0";
 var remainder = 0;
-var ServerIP;
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  var prefs = await SharedPreferences.getInstance();
-  // Try reading data from the counter key. If it doesn't exist, return 0.
-  ServerIP = prefs.getString("ip") ?? "";
-}
+
+// Future<String> getIP() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   var prefs = await SharedPreferences.getInstance();
+//   // Try reading data from the counter key. If it doesn't exist, return 0.
+//   serverIp = prefs.getString("ip") ?? "";
+//   return prefs.getString("ip") ?? "";
+// }
+
 class MyScreen extends StatefulWidget {
   final user;
   final api;
@@ -32,14 +37,18 @@ class MyScreen extends StatefulWidget {
 }
 
 class _MyScreenState extends State<MyScreen> {
+  late String serverIp;
+
   void initState() {
     super.initState();
     //print("Hello!");
-    main();
-    Uri uri = Uri.parse('http://$ServerIP/api/ott');
+
+    serverIp = ServerIpManager.instance.ip;
+
+    Uri uri = Uri.parse('http://$serverIp/api/ott');
     var api = widget.api;
     var user = widget.user;
-    Uri uri3 = Uri.parse('http://$ServerIP/api/info');
+    Uri uri3 = Uri.parse('http://$serverIp/api/info');
     http.get(uri3).then((response3) {
       var data3 = jsonDecode(response3.body);
       print(data3);
@@ -51,7 +60,7 @@ class _MyScreenState extends State<MyScreen> {
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://$ServerIP/api/isadult');
+      Uri uri2 = Uri.parse('http://$serverIp/api/isadult');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -75,7 +84,7 @@ class _MyScreenState extends State<MyScreen> {
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://$ServerIP/api/left');
+      Uri uri2 = Uri.parse('http://$serverIp/api/left');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -117,19 +126,20 @@ class _MyScreenState extends State<MyScreen> {
                           bottom: 0,
                           left: 0,
                           right: 0,
-                          child: Chip(
-                              backgroundColor:
-                                  Color.fromARGB(255, 212, 230, 241),
-                              label: Container(
-                                  width: 40,
-                                  height: 16,
-                                  child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Text(
-                                      role,
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  )))),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 212, 230, 241),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Center(
+                                  child: Text(
+                                    role,
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                              ))),
                     ],
                   ),
                   Text(
@@ -184,38 +194,38 @@ class _MyScreenState extends State<MyScreen> {
               shrinkWrap: true,
               padding: const EdgeInsets.all(9.0),
               children: <Widget>[
-                MyButton(
-                  height: 55,
-                  borderRadius: 10,
-                  backgroundColor: Colors.transparent,
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/settings');
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Text("設置",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500)),
-                            Spacer(),
-                            //Text("9.9.9999(C6PR203)"),
-                            IconButton(
-                                iconSize: 15.0,
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                ))
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Divider(),
+                // MyButton(
+                //   height: 55,
+                //   borderRadius: 10,
+                //   backgroundColor: Colors.transparent,
+                //   onPressed: () {
+                //     Navigator.pushNamed(context, '/settings');
+                //   },
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(3.0),
+                //     child: Column(
+                //       children: [
+                //         Row(
+                //           children: [
+                //             Text("設置",
+                //                 style: TextStyle(
+                //                     color: Colors.black,
+                //                     fontWeight: FontWeight.w500)),
+                //             Spacer(),
+                //             //Text("9.9.9999(C6PR203)"),
+                //             IconButton(
+                //                 iconSize: 15.0,
+                //                 onPressed: () {},
+                //                 icon: Icon(
+                //                   Icons.arrow_forward_ios_rounded,
+                //                 ))
+                //           ],
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // Divider(),
                 MyButton(
                   height: 55,
                   borderRadius: 10,
@@ -261,8 +271,7 @@ class _MyScreenState extends State<MyScreen> {
                             signInTitle: "顯示我的一次性驗證碼",
                           ),
                           sensitiveTransaction: true,
-                          localizedReason:
-                              '驗證以繼續（人臉/指紋）',
+                          localizedReason: '驗證以繼續（人臉/指紋）',
                           biometricOnly: true);
                     } catch (PlatformException) {
                       print("Sorry, No Biom");
@@ -273,13 +282,11 @@ class _MyScreenState extends State<MyScreen> {
                             androidAuthStrings: AndroidAuthMessages(
                               signInTitle: "顯示我的一次性驗證碼",
                             ),
-                            localizedReason:
-                                '驗證以繼續（PIN/Password）');
+                            localizedReason: '驗證以繼續（PIN/Password）');
                       } catch (PlatformException) {
                         Fluttertoast.showToast(
                             backgroundColor: Color.fromARGB(255, 86, 84, 85),
-                            msg:
-                                "錯誤：您沒有 PIN/密碼設置或不允許，您的操作被取消",
+                            msg: "錯誤：您沒有 PIN/密碼設置或不允許，您的操作被取消",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
                             timeInSecForIosWeb: 1,
@@ -288,7 +295,7 @@ class _MyScreenState extends State<MyScreen> {
                       }
                     }
                     if (didAuthenticate) {
-                      Uri uri = Uri.parse('http://$ServerIP/api/ott');
+                      Uri uri = Uri.parse('http://$serverIp/api/ott');
                       var response = await http.get(uri, headers: {
                         'authorization': 'Bearer ${widget.api}',
                         'user': '${widget.user}'
@@ -303,8 +310,7 @@ class _MyScreenState extends State<MyScreen> {
                     } else {
                       Fluttertoast.showToast(
                           backgroundColor: Color.fromARGB(255, 86, 84, 85),
-                          msg:
-                              "錯誤：您沒有 PIN/密碼設置或不允許，您的操作被取消",
+                          msg: "錯誤：您沒有 PIN/密碼設置或不允許，您的操作被取消",
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
                           timeInSecForIosWeb: 1,
@@ -340,7 +346,18 @@ class _MyScreenState extends State<MyScreen> {
                 ),
                 MyButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      var logout = widget.api;
+                      var user = widget.user;
+                      http.get(Uri.parse('http://$serverIp/api/logoutapp'),
+                          headers: {
+                            'authorization': 'Bearer $logout',
+                            'user': '$user'
+                          }).then((response) {
+                        //print(user);
+                        if (jsonDecode(response.body)["value"] == "Completed") {
+                          Navigator.of(context).pop();
+                        }
+                      });
                     },
                     child: Text(
                       "登出",

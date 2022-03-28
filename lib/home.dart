@@ -12,14 +12,9 @@ import 'package:mysunflower/screen_management/screen_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'server_ip_management/server_ip_manager.dart';
 import 'user_config/my_button.dart';
-var ServerIP;
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  var prefs = await SharedPreferences.getInstance();
-  // Try reading data from the counter key. If it doesn't exist, return 0.
-  ServerIP = prefs.getString("ip") ?? "";
-}
+
 class HomePage extends StatefulWidget {
   final api;
   final user;
@@ -34,11 +29,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var serverIp;
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    main();
+    serverIp = ServerIpManager.instance.ip;
   }
+
   var ischild = false;
   //TODO:Check if child and display.
   Widget build(BuildContext context) {
@@ -75,8 +73,7 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, screenManager, child) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                        "歡迎來到零用錢系統！"),
+                    Text("歡迎來到零用錢系統！"),
                     SizedBox(height: 14),
                     Text(
                       "增值/提取 零用錢",
@@ -129,8 +126,7 @@ class _HomePageState extends State<HomePage> {
                                 var logout = widget.api;
                                 var user = widget.user;
                                 http.get(
-                                    Uri.parse(
-                                        'http://$ServerIP/api/logoutapp'),
+                                    Uri.parse('http://$serverIp/api/logoutapp'),
                                     headers: {
                                       'authorization': 'Bearer $logout',
                                       'user': '$user'
@@ -180,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                     //   //       sensitiveTransaction: true,
                     //   //         localizedReason:
                     //   //             'Authenticate to proceed(Face/Fingerprint)',
-                                  
+
                     //   //         biometricOnly: true);
                     //   //   } catch (PlatformException) {
                     //   //     print("Sorry, No Biom");

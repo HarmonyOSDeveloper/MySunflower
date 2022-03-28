@@ -14,6 +14,8 @@ import 'package:http/http.dart' as http;
 import 'package:mysunflower/user_config/user_config.dart';
 import 'package:provider/provider.dart';
 
+import 'server_ip_management/server_ip_manager.dart';
+
 var ServerIP;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +24,8 @@ Future<void> main() async {
   print("Running");
   ServerIP = prefs.getString("ip") ?? "";
   print(ServerIP);
-  runApp(ChangeNotifierProvider(
-    create: (context) => ScreenManager(),
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => ScreenManager())],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
@@ -253,6 +255,10 @@ class _LoginPageState extends State<LoginPage> {
                 username.text = "";
                 pw.text = "";
               });
+
+              ServerIpManager.instance.ip = ServerIP;
+              print(ServerIpManager.instance.ip);
+
               //print(username1);
               Navigator.push(
                 context,

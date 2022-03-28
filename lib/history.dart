@@ -10,16 +10,12 @@ import 'package:mysunflower/user_config/my_button.dart';
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'server_ip_management/server_ip_manager.dart';
+
 DateTime start = DateTime.now();
 DateTime end = DateTime.now();
 var dtc = TextEditingController();
-var ServerIP;
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  var prefs = await SharedPreferences.getInstance();
-  // Try reading data from the counter key. If it doesn't exist, return 0.
-  ServerIP = prefs.getString("ip") ?? "";
-}
+
 class History extends StatefulWidget {
   final api;
   final user;
@@ -31,22 +27,25 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  @override
   List<Map> _listb = [];
+  late String serverIp;
+
+  @override
   void initState() {
     super.initState();
+    serverIp = ServerIpManager.instance.ip;
     //print("Hello!");
     var data = [];
-    Uri uri = Uri.parse('http://$ServerIP/api/ott');
+    Uri uri = Uri.parse('http://$serverIp/api/ott');
     var api = widget.api;
     var user = widget.user;
-    main();
+
     http.get(uri, headers: {
       'authorization': 'Bearer $api',
       'user': '$user'
     }).then((response) {
       var authkey = jsonDecode(response.body)["value"];
-      Uri uri2 = Uri.parse('http://$ServerIP/api/history');
+      Uri uri2 = Uri.parse('http://$serverIp/api/history');
       http.get(uri2, headers: {
         'authorization': 'Bearer $authkey',
         'user': '$user'
@@ -187,113 +186,102 @@ class _HistoryState extends State<History> {
                                                   ),
                                                 ],
                                               )),
-                                              SizedBox(height: 5,),
+                                              SizedBox(height: 5),
                                               Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Expanded(
-                                                  child: Container(
-                                                      width: 250,
-                                                      height: 40,
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: MyButton(
-                                                              backgroundColor: Colors.transparent,
-                                                              onPressed: () {
-                                                                Navigator.pop(
-                                                                    context);
-                                                                dtc.text = "";
-                                                                start = DateTime.now();
-                                                                end = DateTime.now();
-                                                                setState(() {});
-                                                              },
-                                                              child: Text(
-                                                                "清除過濾器",
-                                                                style: TextStyle(
-                                                                    color: Color
-                                                                        .fromARGB(
-                                                                            255,
-                                                                            232,
-                                                                            64,
-                                                                            38)),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 25,
-                                                            child:
-                                                                VerticalDivider(
-                                                              thickness: 1,
-                                                              width: 15,
-                                                              color:
-                                                                  Color.fromRGBO(
-                                                                      0,
-                                                                      0,
-                                                                      0,
-                                                                      0.2),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child: MyButton(
-                                                              borderRadius: 30,
-                                                              backgroundColor:
-                                                                  Colors
-                                                                      .transparent,
-                                                              onPressed: () {
-                                                                if (start.isBefore(
-                                                                    end)) {
-                                                                  dtc.text = DateFormat(
-                                                                              "y-M-d")
-                                                                          .format(
-                                                                              start) +
-                                                                      " - " +
-                                                                      DateFormat(
-                                                                              "y-M-d")
-                                                                          .format(
-                                                                              end);
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                  setState(() {});
-                                                                } else {
-                                                                  Fluttertoast.showToast(
-                                                                      backgroundColor:
-                                                                          Color.fromARGB(
-                                                                              255,
-                                                                              86,
-                                                                              84,
-                                                                              85),
-                                                                      msg:
-                                                                          "錯誤：開始日期大於結束日期。",
-                                                                      toastLength: Toast
-                                                                          .LENGTH_SHORT,
-                                                                      gravity:
-                                                                          ToastGravity
-                                                                              .BOTTOM,
-                                                                      timeInSecForIosWeb:
-                                                                          1,
-                                                                      fontSize:
-                                                                          16.0);
-                                                                }
-                                                              },
-                                                              child: Text(
-                                                                "OK",
-                                                                style: TextStyle(
-                                                                    color: Color
-                                                                        .fromARGB(
-                                                                            255,
-                                                                            10,
-                                                                            89,
-                                                                            247)),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      )),
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: MyButton(
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                          dtc.text = "";
+                                                          start =
+                                                              DateTime.now();
+                                                          end = DateTime.now();
+                                                          setState(() {});
+                                                        },
+                                                        child: Text(
+                                                          "清除過濾器",
+                                                          style: TextStyle(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      232,
+                                                                      64,
+                                                                      38)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 25,
+                                                      child: VerticalDivider(
+                                                        thickness: 1,
+                                                        width: 15,
+                                                        color: Color.fromRGBO(
+                                                            0, 0, 0, 0.2),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: MyButton(
+                                                        borderRadius: 30,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        onPressed: () {
+                                                          if (start
+                                                              .isBefore(end)) {
+                                                            dtc.text = DateFormat(
+                                                                        "y-M-d")
+                                                                    .format(
+                                                                        start) +
+                                                                " - " +
+                                                                DateFormat(
+                                                                        "y-M-d")
+                                                                    .format(
+                                                                        end);
+                                                            Navigator.pop(
+                                                                context);
+                                                            setState(() {});
+                                                          } else {
+                                                            Fluttertoast.showToast(
+                                                                backgroundColor:
+                                                                    Color.fromARGB(
+                                                                        255,
+                                                                        86,
+                                                                        84,
+                                                                        85),
+                                                                msg:
+                                                                    "錯誤：開始日期大於結束日期。",
+                                                                toastLength: Toast
+                                                                    .LENGTH_SHORT,
+                                                                gravity:
+                                                                    ToastGravity
+                                                                        .BOTTOM,
+                                                                timeInSecForIosWeb:
+                                                                    1,
+                                                                fontSize: 16.0);
+                                                          }
+                                                        },
+                                                        child: Text(
+                                                          "OK",
+                                                          style: TextStyle(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      10,
+                                                                      89,
+                                                                      247)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                              SizedBox(
-                                                height: 5,
-                                              )
+                                              SizedBox(height: 5)
                                             ],
                                           ),
                                         ),
@@ -310,12 +298,13 @@ class _HistoryState extends State<History> {
                   flex: 2,
                   child: MyButton(
                     width: 80,
+                    height: 45,
                     onPressed: () {
                       print(dtc.text);
                       if (dtc.text != "") {
                         //print("Hello!");
                         var data = [];
-                        Uri uri = Uri.parse('http://$ServerIP/api/ott');
+                        Uri uri = Uri.parse('http://$serverIp/api/ott');
                         var api = widget.api;
                         var user = widget.user;
                         http.get(uri, headers: {
@@ -323,8 +312,7 @@ class _HistoryState extends State<History> {
                           'user': '$user'
                         }).then((response) {
                           var authkey = jsonDecode(response.body)["value"];
-                          Uri uri2 =
-                              Uri.parse('http://$ServerIP/api/history');
+                          Uri uri2 = Uri.parse('http://$serverIp/api/history');
                           http.get(uri2, headers: {
                             'authorization': 'Bearer $authkey',
                             'user': '$user',
@@ -345,7 +333,7 @@ class _HistoryState extends State<History> {
                       } else {
                         //print("Hello!");
                         var data = [];
-                        Uri uri = Uri.parse('http://$ServerIP/api/ott');
+                        Uri uri = Uri.parse('http://$serverIp/api/ott');
                         var api = widget.api;
                         var user = widget.user;
                         http.get(uri, headers: {
@@ -353,8 +341,7 @@ class _HistoryState extends State<History> {
                           'user': '$user'
                         }).then((response) {
                           var authkey = jsonDecode(response.body)["value"];
-                          Uri uri2 =
-                              Uri.parse('http://$ServerIP/api/history');
+                          Uri uri2 = Uri.parse('http://$serverIp/api/history');
                           http.get(uri2, headers: {
                             'authorization': 'Bearer $authkey',
                             'user': '$user',
@@ -382,7 +369,7 @@ class _HistoryState extends State<History> {
               height: 20,
             ),
             Padding(
-              padding: const EdgeInsets.all(3.0),
+              padding: const EdgeInsets.all(5.0),
               child: Container(
                 decoration: new BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
@@ -404,7 +391,7 @@ class _HistoryState extends State<History> {
                             Expanded(
                                 flex: 2,
                                 child: Align(
-                                    alignment: Alignment.centerRight,
+                                    alignment: Alignment.center,
                                     child: Text(
                                       "零用錢",
                                       style: TextStyle(
@@ -413,7 +400,7 @@ class _HistoryState extends State<History> {
                             Expanded(
                                 flex: 1,
                                 child: Align(
-                                    alignment: Alignment.centerRight,
+                                    alignment: Alignment.center,
                                     child: Text(
                                       "成人",
                                       style: TextStyle(
@@ -422,7 +409,7 @@ class _HistoryState extends State<History> {
                             Expanded(
                                 flex: 1,
                                 child: Align(
-                                    alignment: Alignment.centerRight,
+                                    alignment: Alignment.center,
                                     child: Text(
                                       "孩子",
                                       style: TextStyle(
@@ -431,7 +418,7 @@ class _HistoryState extends State<History> {
                             Expanded(
                                 flex: 2,
                                 child: Align(
-                                    alignment: Alignment.centerRight,
+                                    alignment: Alignment.center,
                                     child: Text(
                                       "零用錢",
                                       style: TextStyle(
@@ -441,64 +428,75 @@ class _HistoryState extends State<History> {
                         ),
                         Divider(),
                       ]),
-                      ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: _listb.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 6, 0, 6),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                          _listb[index]["date"],
-                                          style: TextStyle(),
-                                        )),
-                                    Expanded(
-                                        flex: 2,
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              _listb[index]["action"] +
-                                                  _listb[index]["money"],
-                                              style: TextStyle(),
-                                            ))),
-                                    Expanded(
-                                        flex: 1,
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              _listb[index]["from"],
-                                              style: TextStyle(),
-                                            ))),
-                                    Expanded(
-                                        flex: 1,
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              _listb[index]["to"],
-                                              style: TextStyle(),
-                                            ))),
-                                    Expanded(
-                                        flex: 2,
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              _listb[index]["reason"],
-                                              style: TextStyle(),
-                                              overflow: TextOverflow.ellipsis,
-                                            ))),
-                                  ],
-                                ),
-                              ),
-                              Divider()
-                            ],
-                          );
-                        },
+                      Container(
+                        child: SingleChildScrollView(
+                          child: ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: _listb.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  MyButton(
+                                    onPressed: (){},
+                                    backgroundColor: Colors.transparent,
+                                    textColor: Colors.black,
+                                    borderRadius: 5,
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 6, 0, 6),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              flex: 2,
+                                              child: Text(
+                                                _listb[index]["date"],
+                                                style: TextStyle(),
+                                              )),
+                                          Expanded(
+                                              flex: 2,
+                                              child: Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    _listb[index]["action"] +
+                                                        _listb[index]["money"],
+                                                    style: TextStyle(),
+                                                  ))),
+                                          Expanded(
+                                              flex: 1,
+                                              child: Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    _listb[index]["from"],
+                                                    style: TextStyle(),
+                                                  ))),
+                                          Expanded(
+                                              flex: 1,
+                                              child: Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    _listb[index]["to"],
+                                                    style: TextStyle(),
+                                                  ))),
+                                          Expanded(
+                                              flex: 2,
+                                              child: Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    _listb[index]["reason"],
+                                                    style: TextStyle(),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ))),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Divider()
+                                ],
+                              );
+                            },
+                          ),
+                        ),
                       )
                     ],
                   ),
